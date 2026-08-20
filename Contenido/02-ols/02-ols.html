@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Introducción a la Econometría</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Luis Fernando Escobar" />
+    <script src="02-ols_files/header-attrs/header-attrs.js"></script>
+    <link href="02-ols_files/remark-css/default.css" rel="stylesheet" />
+    <link href="02-ols_files/remark-css/metropolis.css" rel="stylesheet" />
+    <link href="02-ols_files/remark-css/metropolis-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="my-css.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Introducción a la Econometría
+]
+.subtitle[
+## Eco 360, Unidad 1
+]
+.author[
+### Luis Fernando Escobar
+]
+.date[
+### II semestre - 2026
+]
+
+---
+
+class: inverse, middle
+
+
+
+&lt;style type="text/css"&gt;
+@media print {
+  .has-continuation {
+    display: block !important;
+  }
+}
+&lt;/style&gt;
+
+# Prólogo
+
+---
+
+# La estadística nos rodea
+
+## ¿Por qué se necesita comprender la estadística?
+
+Las estadísticas nos rodean, nos persiguen y nos acosan (Sosa, 2017). Están presentes tanto en asuntos cotidianos como en cuestiones de carácter técnico. Por ejemplo, nos preguntamos: ¿Escuchaste cómo va a estar el tiempo hoy?, ¿cuánto habrá sido mi calificación en el examen? ¿sabes si va a hacer frío el fin de semana? Asimismo, en diferentes ámbitos profesionales y científicos surgen preguntas como: ¿Cuál es la efectividad de la policía para combatir el crimen?, ¿cuál es el efecto de un nuevo fertilizante sobre la producción?, ¿cuál es el nivel de pobreza y qué factores influyen en ella?, ¿existe discriminación en el mercado laboral?, ¿cuál es la efectividad de las vacunas frente al COVID-19?, ¿fumar es perjudicial para la salud? o ¿la implementación de un impuesto al tabaco puede generar mayores ingresos para el Estado?
+
+---
+
+En este sentido, las estadísticas están presentes en diferentes ámbitos, como el económico, social, político, médico, meteorológico, alimentario y deportivo, entre otros. Muchas de estas mediciones forman parte de nuestra vida cotidiana y, aunque no siempre somos conscientes de ello, influyen en las decisiones que tomamos.
+
+La estadística constituye una herramienta fundamental para el desarrollo de la investigación científica. El investigador recurre a métodos estadísticos para contrastar hipótesis, comparar resultados, identificar patrones, establecer relaciones entre variables y formular conclusiones y recomendaciones. En este sentido, la estadística permite abordar problemas de manera sistemática y establecer criterios de decisión en situaciones caracterizadas por la incertidumbre.
+
+---
+
+# La estadística nos rodea
+
+## El conocimiento teórico proporciona las bases para desarrollar el arte
+
+
+**[Lae Sánchez](https://www.youtube.com/watch?v=I_ISUF905lg)**
+
+**[2 Tipos de cambio](https://www.youtube.com/watch?v=9h5UAv3qACM)**
+
+**[Walter Sosa Escudero](https://www.youtube.com/watch?v=hODwSUX0kT4)**
+
+**[Demasiado flow](https://www.facebook.com/share/r/17bcoD4AEa/)**
+
+
+---
+
+# La clase pasada
+
+## Motivación
+
+En nuestra anterior sesión, se habló:
+
+1. discutimos la **motivación** para estudiar econometría 
+
+1. **presentamos .mono[R]**—por qué lo usamos y qué puede hacer
+
+1. **comenzamos con el contenido de la asignatura** en base material bibliográfico 
+
+
+
+---
+layout: false
+class: inverse, middle
+# Modelo Clásico de Regresión Lineal
+
+---
+layout: true
+# Población *vs.* muestra
+
+---
+
+## Modelos y notación
+
+Se escribe el modelo poblacional (simple):
+
+$$ y_i = \beta_0 + \beta_1 x_i + u_i $$
+
+y el modelo de regresión estimado, basado en la muestra, como:
+
+$$ y_i = \hat{\beta}_0 + \hat{\beta}_1 x_i + e_i $$
+
+Un modelo de regresión estimado produce estimaciones para cada observación:
+
+$$ \hat{y}_i = \hat{\beta}_0 + \hat{\beta}_1 x_i $$
+
+lo cual nos da la línea de _mejor ajuste_ a través del conjunto de datos.
+
+---
+layout: true
+
+# Población *vs.* muestra
+
+**Pregunta:** ¿Por qué nos importa la *población vs. muestra*?
+
+---
+
+--
+
+
+
+.pull-left[
+
+&lt;img src="02-ols_files/figure-html/pop1-1.svg" alt="" style="display: block; margin: auto;" /&gt;
+
+.center[**Población**]
+
+]
+
+--
+
+.pull-right[
+
+&lt;img src="02-ols_files/figure-html/scatter1-1.svg" alt="" style="display: block; margin: auto;" /&gt;
+
+.center[**Relación poblacional**]
+
+$$ y_i = 2.53 + 0.57 x_i + u_i $$
+
+$$ y_i = \beta_0 + \beta_1 x_i + u_i $$
+
+
+]
+
+---
+
+.pull-left[
+
+&lt;img src="02-ols_files/figure-html/sample1-1.svg" alt="" style="display: block; margin: auto;" /&gt;
+
+.center[**Muestra 1:** 30 individuos aleatorios]
+
+]
+
+--
+
+.pull-right[
+
+&lt;img src="02-ols_files/figure-html/sample1 scatter-1.svg" alt="" style="display: block; margin: auto;" /&gt;
+
+.center[
+
+**Relación poblacional**
+&lt;br&gt;
+`\(y_i = 2.53 + 0.57 x_i + u_i\)`
+
+**Relación muestral**
+&lt;br&gt;
+`\(\hat{y}_i = 2.36 + 0.61 x_i\)`
+
+]
+
+]
+
+---
+count: false
+
+.pull-left[
+
+&lt;img src="02-ols_files/figure-html/sample2-1.svg" alt="" style="display: block; margin: auto;" /&gt;
+
+.center[**Muestra 2:** 30 individuos aleatorios]
+
+]
+
+.pull-right[
+
+&lt;img src="02-ols_files/figure-html/sample2 scatter-1.svg" alt="" style="display: block; margin: auto;" /&gt;
+
+.center[
+
+**Relación poblacional**
+&lt;br&gt;
+`\(y_i = 2.53 + 0.57 x_i + u_i\)`
+
+**Relación muestral**
+&lt;br&gt;
+`\(\hat{y}_i = 2.79 + 0.56 x_i\)`
+
+]
+
+]
+---
+count: false
+
+.pull-left[
+
+&lt;img src="02-ols_files/figure-html/sample3-1.svg" alt="" style="display: block; margin: auto;" /&gt;
+
+.center[**Muestra 3:** 30 individuos aleatorios]
+
+]
+
+.pull-right[
+
+&lt;img src="02-ols_files/figure-html/sample3 scatter-1.svg" alt="" style="display: block; margin: auto;" /&gt;
+
+.center[
+
+**Relación poblacional**
+&lt;br&gt;
+`\(y_i = 2.53 + 0.57 x_i + u_i\)`
+
+**Relación muestral**
+&lt;br&gt;
+`\(\hat{y}_i = 3.21 + 0.45 x_i\)`
+
+]
+
+]
+
+---
+layout: false
+class: clear, middle
+
+Repitamos esto **10,000 veces**.
+
+(Este ejercicio se llama una simulación (Monte Carlo).)
+
+---
+layout: true
+# Población *vs.* muestra
+
+---
+
+&lt;img src="02-ols_files/figure-html/simulation scatter-1.png" alt="" style="display: block; margin: auto;" /&gt;
+
+---
+layout: true
+# Población *vs.* muestra
+
+**Question:** Why do we care about *population vs. sample*?
+
+---
+
+.pull-left[
+&lt;img src="02-ols_files/figure-html/simulation scatter2-1.png" alt="" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+
+- En **promedio**, nuestras líneas de regresión coinciden muy bien con la línea poblacional.
+
+- Sin embargo, **líneas individuales** (muestras) pueden errar bastante el objetivo.
+
+- Las diferencias entre muestras individuales y la población generan **incertidumbre** para el econometrista.
+
+]
+
+---
+
+**Pregunta:** ¿Por qué nos importa la *población vs. muestra*?
+
+--
+
+**Respuesta:** La incertidumbre importa.
+
+`\(\hat{\beta}\)` en sí es una variable aleatoria—que depende de la muestra aleatoria. Cuando se toma una muestra y corremos una regresión, no sabemos si se trata de una muestra 'buena' ( `\(\hat{\beta}\)` está cerca de `\(\beta\)`) o una muestra 'mala' (nuestra muestra difiere bastante de la población).
+
+---
+layout: false
+# Población *vs.* muestra
+
+## Incertidumbre
+
+Llevar el control de esta incertidumbre será un concepto clave a lo largo de nuestro curso.
+
+- Estimar errores estándar para nuestras estimaciones.
+
+- Probar hipótesis.
+
+- Corregir por heterocedasticidad y autocorrelación.
+
+--
+
+Primero, vamos a repasar cómo obtenemos estas estimaciones (inciertas) de regresión.
+
+---
+# Regresión lineal
+
+## El estimador
+
+Podemos estimar una línea de regresión en .mono[R] (`lm(y ~ x, my_data)`) y en .mono[Stata] (`reg y x`). Pero ¿de dónde vienen estas estimaciones?
+
+Unas diapositivas atrás:
+
+&gt; $$ \hat{y}_i = \hat{\beta}_0 + \hat{\beta}_1 x_i $$
+&gt; lo cual nos da la línea de *mejor ajuste* a través de nuestro conjunto de datos.
+
+Pero ¿qué se entiende por la "línea de mejor ajuste"?
+
+---
+layout: false
+
+# Ser el "mejor"
+
+**Pregunta:** ¿Qué se entiende por la *línea de mejor ajuste*?
+
+**Respuestas:**
+
+- En general (econometría), *línea de mejor ajuste* significa la línea que minimiza la suma de errores al cuadrado (SSE, *sum of squared errors*):
+
+.center[
+
+`\(\text{SSE} = \sum_{i = 1}^{n} e_i^2\quad\)` donde `\(\quad e_i = y_i - \hat{y}_i\)`
+
+]
+
+- Los **mínimos cuadrados** ordinarios (**OLS**, *Ordinary Least Squares*) minimizan la suma de errores al cuadrado.
+- Basado en un conjunto de supuestos (en su mayoría razonables), OLS
+  - Es insesgado (y consistente)
+  - Es el *mejor* estimador lineal insesgado (de varianza mínima) (BLUE, *Best Linear Unbiased Estimator*)
+
+---
+layout: true
+# OLS *vs.* otras líneas/estimadores
+
+---
+
+Si consideramos el conjunto de datos que generamos anteriormente. `\(\color{#ffffff}{\bigg|}\)`
+
+&lt;img src="02-ols_files/figure-html/ols vs lines 1-1.svg" alt="" style="display: block; margin: auto;" /&gt;
+
+---
+count: false
+
+Para cualquier línea `\(\left(\hat{y} = \hat{\beta}_0 + \hat{\beta}_1 x\right)\)` `\(\color{#ffffff}{\bigg|}\)`
+
+&lt;img src="02-ols_files/figure-html/vs lines 2-1.svg" alt="" style="display: block; margin: auto;" /&gt;
+
+---
+count: false
+
+Para cualquier línea `\(\left(\hat{y} = \hat{\beta}_0 + \hat{\beta}_1 x\right)\)`, se puede calcular los errores: `\(e_i = y_i - \hat{y}_i\)` `\(\color{#ffffff}{\bigg|}\)`
+
+&lt;img src="02-ols_files/figure-html/ols vs lines 3-1.svg" alt="" style="display: block; margin: auto;" /&gt;
+
+---
+count: false
+
+Para cualquier línea `\(\left(\hat{y} = \hat{\beta}_0 + \hat{\beta}_1 x\right)\)`, se puede calcular los errores: `\(e_i = y_i - \hat{y}_i\)` `\(\color{#ffffff}{\bigg|}\)`
+
+&lt;img src="02-ols_files/figure-html/ols vs lines 4-1.svg" alt="" style="display: block; margin: auto;" /&gt;
+
+---
+count: false
+
+Para cualquier línea `\(\left(\hat{y} = \hat{\beta}_0 + \hat{\beta}_1 x\right)\)`, se puede calcular los errores: `\(e_i = y_i - \hat{y}_i\)` `\(\color{#ffffff}{\bigg|}\)`
+
+&lt;img src="02-ols_files/figure-html/ols vs lines 5-1.svg" alt="" style="display: block; margin: auto;" /&gt;
+
+---
+count: false
+
+SSE eleva al cuadrado los errores `\(\left(\sum e_i^2\right)\)`: los errores más grandes reciben penalizaciones mayores. `\(\color{#ffffff}{\bigg|}\)`
+
+&lt;img src="02-ols_files/figure-html/ols vs lines 6-1.svg" alt="" style="display: block; margin: auto;" /&gt;
+
+---
+count: false
+
+La estimación OLS es la combinación de `\(\hat{\beta}_0\)` y `\(\hat{\beta}_1\)` que minimiza SSE. `\(\color{#ffffff}{\bigg|}\)`
+
+&lt;img src="02-ols_files/figure-html/ols vs lines 7-1.svg" alt="" style="display: block; margin: auto;" /&gt;
+
+---
+layout: true
+# OLS
+
+## Formalmente
+
+---
+
+En la regresión lineal simple, el estimador OLS surge de elegir `\(\hat{\beta}_0\)` y `\(\hat{\beta}_1\)` que minimizan la suma de errores al cuadrado (SSE), _i.e._,
+
+$$ \min_{\hat{\beta}_0,\, \hat{\beta}_1} \text{SSE} $$
+
+--
+
+pero ya se conoce que `\(\text{SSE} = \sum_i e_i^2\)`. Pero ahora se usará las definiciones de `\(e_i\)` y `\(\hat{y}\)`.
+
+$$
+`\begin{aligned}
+  e_i^2 &amp;= \left( y_i - \hat{y}_i \right)^2 = \left( y_i - \hat{\beta}_0 - \hat{\beta}_1 x_i \right)^2 \\
+  &amp;= y_i^2 - 2 y_i \hat{\beta}_0 - 2 y_i \hat{\beta}_1 x_i + \hat{\beta}_0^2 + 2 \hat{\beta}_0 \hat{\beta}_1 x_i + \hat{\beta}_1^2 x_i^2
+\end{aligned}`
+$$
+
+--
+
+**Recordatorio:** Minimizar una función multivariada requiere (**1**) que las primeras derivadas sean iguales a cero (las *condiciones de 1.super[er] orden*) y (**2**) condiciones de segundo orden (concavidad).
+
+---
+
+Nos estamos acercando. Necesitamos **minimizar SSE**. Ya mostramos cómo SSE se relaciona con nuestra muestra (nuestros datos: `\(x\)` y `\(y\)`) y nuestras estimaciones (_i.e._, `\(\hat{\beta}_0\)` y `\(\hat{\beta}_1\)`).
+
+$$ \text{SSE} = \sum_i e_i^2 = \sum_i \left( y_i^2 - 2 y_i \hat{\beta}_0 - 2 y_i \hat{\beta}_1 x_i + \hat{\beta}_0^2 + 2 \hat{\beta}_0 \hat{\beta}_1 x_i + \hat{\beta}_1^2 x_i^2 \right) $$
+
+Para las condiciones de primer orden de la minimización, ahora tomamos las primeras derivadas de SSE respecto a `\(\hat{\beta}_0\)` y `\(\hat{\beta}_1\)`.
+
+$$
+`\begin{aligned}
+  \dfrac{\partial \text{SSE}}{\partial \hat{\beta}_0} &amp;= \sum_i \left( 2 \hat{\beta}_0 + 2 \hat{\beta}_1 x_i - 2 y_i \right) = 2n \hat{\beta}_0 + 2 \hat{\beta}_1 \sum_i x_i - 2 \sum_i y_i \\
+  &amp;= 2n \hat{\beta}_0 + 2n \hat{\beta}_1 \overline{x} - 2n \overline{y}
+\end{aligned}`
+$$
+
+donde `\(\overline{x} = \frac{\sum x_i}{n}\)` y `\(\overline{y} = \frac{\sum y_i}{n}\)` son las medias muestrales de `\(x\)` y `\(y\)` (tamaño `\(n\)`).
+
+---
+
+Las condiciones de primer orden establecen que las derivadas son iguales a cero, entonces:
+
+$$ \dfrac{\partial \text{SSE}}{\partial \hat{\beta}_0} = 2n \hat{\beta}_0 + 2n \hat{\beta}_1 \overline{x} - 2n \overline{y} = 0 $$
+
+lo cual implica
+
+$$ \hat{\beta}_0 = \overline{y} - \hat{\beta}_1 \overline{x} $$
+
+Ahora para `\(\hat{\beta}_1\)`.
+
+---
+
+Tomamos la derivada de SSE respecto a `\(\hat{\beta}_1\)`
+
+$$
+`\begin{aligned}
+  \dfrac{\partial \text{SSE}}{\partial \hat{\beta}_1} &amp;= \sum_i \left( 2 \hat{\beta}_0 x_i + 2 \hat{\beta}_1 x_i^2 - 2 y_i x_i \right) = 2 \hat{\beta}_0 \sum_i x_i + 2 \hat{\beta}_1 \sum_i x_i^2 - 2 \sum_i y_i x_i \\
+  &amp;= 2n \hat{\beta}_0 \overline{x} + 2 \hat{\beta}_1 \sum_i x_i^2 - 2 \sum_i y_i x_i
+\end{aligned}`
+$$
+
+la igualamos a cero (condiciones de primer orden, de nuevo)
+
+$$ \dfrac{\partial \text{SSE}}{\partial \hat{\beta}_1} = 2n \hat{\beta}_0 \overline{x} + 2 \hat{\beta}_1 \sum_i x_i^2 - 2 \sum_i y_i x_i = 0 $$
+
+y sustituimos nuestra relación para `\(\hat{\beta}_0\)`, _i.e._, `\(\hat{\beta}_0 = \overline{y} - \hat{\beta}_1 \overline{x}\)`. Así,
+
+$$
+ 2n \left(\overline{y} - \hat{\beta}_1 \overline{x}\right) \overline{x} + 2 \hat{\beta}_1 \sum_i x_i^2 - 2 \sum_i y_i x_i = 0
+$$
+
+---
+
+Continuando desde la diapositiva anterior
+
+$$ 2n \left(\overline{y} - \hat{\beta}_1 \overline{x}\right) \overline{x} + 2 \hat{\beta}_1 \sum_i x_i^2 - 2 \sum_i y_i x_i = 0 $$
+
+multiplicamos
+
+$$ 2n \overline{y}\,\overline{x} - 2n \hat{\beta}_1 \overline{x}^2 + 2 \hat{\beta}_1 \sum_i x_i^2 - 2 \sum_i y_i x_i = 0 $$
+
+$$ \implies 2 \hat{\beta}_1 \left( \sum_i x_i^2 - n \overline{x}^2 \right) = 2 \sum_i y_i x_i - 2n \overline{y}\,\overline{x} $$
+
+$$ \implies \hat{\beta}_1 = \dfrac{\sum_i y_i x_i - 2n \overline{y}\,\overline{x}}{\sum_i x_i^2 - n \overline{x}^2} = \dfrac{\sum_i (x_i - \overline{x})(y_i - \overline{y})}{\sum_i (x_i - \overline{x})^2} $$
+
+---
+
+¡Listo!
+
+Ahora se tiene estimadores OLS para la pendiente
+
+$$ \hat{\beta}_1 = \dfrac{\sum_i (x_i - \overline{x})(y_i - \overline{y})}{\sum_i (x_i - \overline{x})^2} $$
+
+y el intercepto
+
+$$ \hat{\beta}_0 = \overline{y} - \hat{\beta}_1 \overline{x} $$
+
+Y ahora sabes de dónde viene la parte de *mínimos cuadrados* en "mínimos cuadrados ordinarios". 🎊
+
+--
+
+Ahora pasamos a los supuestos y las propiedades (implícitas) de OLS.
+
+---
+layout: false
+class: inverse, middle
+
+# OLS: Supuestos y propiedades
+
+---
+layout: true
+# OLS: Supuestos y propiedades
+
+## Propiedades
+---
+
+**Pregunta:** ¿Qué propiedades nos podrían interesar en un estimador?
+
+--
+
+**Interrupción:** Repasemos primero las propiedades estadísticas.
+
+---
+
+**Repaso:** Funciones de densidad
+
+Recordemos que usamos **funciones de densidad de probabilidad** (PDF) para describir la probabilidad de que una **variable aleatoria continua** tome un rango de valores. (El área total = 1.)
+
+Estas PDF caracterizan distribuciones de probabilidad, y las distribuciones más comunes/famosas/populares tienen nombres (_e.g._, normal, *t*, Gamma).
+
+---
+
+**Repaso:** Funciones de densidad
+
+La probabilidad de que una variable aleatoria normal estándar tome un valor entre -2 y 0: `\(\mathop{\text{P}}\left(-2 \leq X \leq 0\right) = 0.48\)`
+
+&lt;img src="02-ols_files/figure-html/example: pdf-1.svg" alt="" style="display: block; margin: auto;" /&gt;
+
+---
+
+**Repaso:** Funciones de densidad
+
+La probabilidad de que una variable aleatoria normal estándar tome un valor entre -1.96 y 1.96: `\(\mathop{\text{P}}\left(-1.96 \leq X \leq 1.96\right) = 0.95\)`
+
+&lt;img src="02-ols_files/figure-html/example: pdf 2-1.svg" alt="" style="display: block; margin: auto;" /&gt;
+
+---
+
+**Repaso:** Funciones de densidad
+
+La probabilidad de que una variable aleatoria normal estándar tome un valor mayor a 2: `\(\mathop{\text{P}}\left(X &gt; 2\right) = 0.023\)`
+
+&lt;img src="02-ols_files/figure-html/example: pdf 3-1.svg" alt="" style="display: block; margin: auto;" /&gt;
+
+---
+
+Imaginemos que estamos tratando de estimar un parámetro desconocido `\(\beta\)`, y conocemos las distribuciones de tres estimadores en competencia. ¿Cuál preferiríamos? ¿Cómo decidiríamos?
+
+&lt;img src="02-ols_files/figure-html/competing pdfs-1.svg" alt="" style="display: block; margin: auto;" /&gt;
+
+---
+
+**Pregunta:** ¿Qué propiedades nos podrían interesar en un estimador?
+
+--
+
+**Respuesta uno: Sesgo.**
+
+En promedio (después de *muchas* muestras), ¿el estimador tiende hacia el valor correcto?
+
+**Más formalmente:** ¿La media de la distribución del estimador es igual al parámetro que estima?
+
+$$ \mathop{\text{Bias}}_\beta \left( \hat{\beta} \right) = \mathop{\boldsymbol{E}}\left[ \hat{\beta} \right] - \beta $$
+
+---
+
+**Respuesta uno: Sesgo.**
+
+.pull-left[
+
+**Estimador insesgado (unbiased):** `\(\mathop{\boldsymbol{E}}\left[ \hat{\beta} \right] = \beta\)`
+
+&lt;img src="02-ols_files/figure-html/unbiased pdf-1.svg" alt="" style="display: block; margin: auto;" /&gt;
+
+]
+
+--
+
+.pull-right[
+
+**Estimador sesgado (biased):** `\(\mathop{\boldsymbol{E}}\left[ \hat{\beta} \right] \neq \beta\)`
+
+&lt;img src="02-ols_files/figure-html/biased pdf-1.svg" alt="" style="display: block; margin: auto;" /&gt;
+
+]
+
+---
+
+**Respuesta dos: Varianza.**
+
+Las tendencias centrales (medias) de distribuciones en competencia no son lo único que importa. También nos importa la **varianza** de un estimador.
+
+$$ \mathop{\text{Var}} \left( \hat{\beta} \right) = \mathop{\boldsymbol{E}}\left[ \left( \hat{\beta} - \mathop{\boldsymbol{E}}\left[ \hat{\beta} \right] \right)^2 \right] $$
+
+Estimadores con menor varianza significan que obtenemos estimaciones más cercanas a la media en cada muestra.
+
+---
+count: false
+
+**Respuesta dos: Varianza (variance).**
+
+&lt;img src="02-ols_files/figure-html/variance pdf-1.svg" alt="" style="display: block; margin: auto;" /&gt;
+
+---
+
+**Respuesta uno: Sesgo.**
+
+**Respuesta dos: Varianza.**
+
+**Perdemos de vista:** El equilibrio (trade-off) entre sesgo y varianza.
+
+¿Deberíamos estar dispuestos a aceptar algo de sesgo para reducir la varianza?
+
+En econometría, generalmente nos apegamos a estimadores insesgados (o consistentes). Pero otras disciplinas (especialmente ciencias de la computación) piensan un poco más en este equilibrio.
+
+---
+layout: false
+
+# El equilibrio entre sesgo y varianza.
+
+&lt;img src="02-ols_files/figure-html/variance bias-1.svg" alt="" style="display: block; margin: auto;" /&gt;
+
+---
+# OLS: Supuestos y propiedades
+
+## Propiedades
+
+Como seguramente ya habrán deducido, se puede decir:
+
+- OLS es **insesgado**.
+- OLS tiene la **varianza mínima** de todos los estimadores lineales insesgados.
+
+---
+# OLS: Supuestos y propiedades
+
+## Propiedades
+
+Pero... estas propiedades dependen de un conjunto de supuestos:
+
+1. La relación poblacional es lineal en los parámetros, con una perturbación aditiva.
+
+2. Nuestra variable `\(X\)` es **exógena**, _i.e._, `\(\mathop{\boldsymbol{E}}\left[ u \mid X \right] = 0\)`.
+
+3. La variable `\(X\)` tiene variación. Y si hay múltiples variables explicativas, no son perfectamente colineales.
+
+4. Las perturbaciones poblacionales `\(u_i\)` están distribuidas de forma independiente e idéntica como variables aleatorias normales con media cero `\(\left( \mathop{\boldsymbol{E}}\left[ u \right] = 0 \right)\)` y varianza `\(\sigma^2\)` (_i.e._,  `\(\mathop{\boldsymbol{E}}\left[ u^2 \right] = \sigma^2\)`). La distribución independiente y la media cero implican conjuntamente que `\(\mathop{\boldsymbol{E}}\left[ u_i u_j \right] = 0\)` para cualquier `\(i\neq j\)`.
+
+---
+# OLS: Supuestos y propiedades
+
+## Supuestos
+
+Distintos supuestos garantizan distintas propiedades:
+
+- Los supuestos (1), (2) y (3) hacen que OLS sea insesgado.
+- El supuesto (4) nos da un estimador insesgado para la varianza de nuestro estimador OLS.
+
+Durante nuestro curso, discutiremos las muchas formas en que la vida real puede **violar estos supuestos**. Por ejemplo:
+
+- Relaciones no lineales en nuestros parámetros/perturbaciones (o mala especificación).
+- Perturbaciones que no están idénticamente distribuidas o no son independientes.
+- Violaciones de exogeneidad (especialmente el sesgo por variable omitida).
+
+---
+# OLS: Supuestos y propiedades
+
+## Esperanza condicional
+
+Para muchas aplicaciones, nuestro supuesto más importante es la **exogeneidad**, _i.e._,
+$$
+`\begin{align}
+  \mathop{E}\left[ u \mid X \right] = 0
+\end{align}`
+$$
+pero ¿qué significa esto en realidad?
+
+--
+
+Una forma de pensar en esta definición:
+
+&gt; Para *cualquier* valor de `\(X\)`, la media de los residuos debe ser cero.
+
+- _E.g._, `\(\mathop{E}\left[ u \mid X=1 \right]=0\)` *y* `\(\mathop{E}\left[ u \mid X=100 \right]=0\)`
+
+- _E.g._, `\(\mathop{E}\left[ u \mid X_2=\text{Mujer} \right]=0\)` *y* `\(\mathop{E}\left[ u \mid X_2=\text{Hombre} \right]=0\)`
+
+- Nota: `\(\mathop{E}\left[ u \mid X \right]=0\)` es más restrictivo que `\(\mathop{E}\left[ u \right]=0\)`
+---
+layout: false
+class: clear, middle
+
+Gráficamente...
+---
+exclude: true
+
+
+---
+class: clear
+
+Exogeneidad válida, _i.e._, `\(\mathop{E}\left[ u \mid X \right] = 0\)`
+
+&lt;img src="02-ols_files/figure-html/ex_good_exog-1.svg" alt="" style="display: block; margin: auto;" /&gt;
+---
+class: clear
+
+Exogeneidad inválida, _i.e._, `\(\mathop{E}\left[ u \mid X \right] \neq 0\)`
+
+&lt;img src="02-ols_files/figure-html/ex_bad_exog-1.svg" alt="" style="display: block; margin: auto;" /&gt;
+
+
+---
+layout: false
+class: inverse, middle
+# Incertidumbre e inferencia
+
+---
+layout: true
+# Incertidumbre e inferencia
+
+---
+
+## ¿Hay algo más?
+
+Hasta este punto, sabemos que OLS tiene algunas propiedades agradables, y sabemos cómo estimar un intercepto y un coeficiente de pendiente mediante OLS.
+
+Nuestro flujo de trabajo actual:
+- Conseguir datos (puntos con valores de `\(x\)` y `\(y\)`)
+- Regresionar `\(y\)` sobre `\(x\)`
+- Graficar la línea OLS (_i.e._, `\(\hat{y} = \hat{\beta}_0 + \hat{\beta}_1\)`)
+- ¿Listo?
+
+Pero ¿cómo **aprendemos** realmente algo de este ejercicio?
+---
+
+## Hay más
+
+Pero ¿cómo **aprendemos** realmente algo de este ejercicio?
+
+- Con base en nuestro valor de `\(\hat{\beta}_1\)`, ¿podemos descartar valores previamente hipotetizados?
+- ¿Qué tan confiados deberíamos estar en la precisión de nuestras estimaciones?
+- ¿Qué tan bien explica nuestro modelo la variación que observamos en `\(y\)`?
+
+Necesitamos poder lidiar con la incertidumbre. Entra: la **Inferencia.**
+
+---
+layout: true
+# Incertidumbre e inferencia
+## Aprendiendo de nuestros errores
+
+---
+
+Como señaló nuestra simulación anterior, nuestro problema con la **incertidumbre** es que no sabemos si nuestra estimación muestral está *cerca* o *lejos* del parámetro poblacional desconocido.&lt;sup&gt;.pink[†]&lt;/sup&gt;
+
+Sin embargo, no todo está perdido. Podemos usar los errores `\(\left(e_i = y_i - \hat{y}_i\right)\)` para tener una idea de qué tan bien explica nuestro modelo la variación observada en `\(y\)`.
+
+Cuando nuestro modelo parece hacer un "buen" trabajo, podríamos confiar un poco más en usarlo para aprender sobre la relación entre `\(y\)` y `\(x\)`.
+
+Ahora solo necesitamos formalizar qué significa realmente un "buen trabajo".
+
+.footnote[
+.pink[†]: Excepto cuando nosotros mismos corremos la simulación, razón por la cual nos gustan las simulaciones.
+]
+
+---
+
+Primero, estimaremos la varianza de `\(u_i\)` (recordemos: `\(\mathop{\text{Var}} \left( u_i \right) = \sigma^2\)`) usando nuestros errores al cuadrado, _i.e._,
+
+$$ s^2 = \dfrac{\sum_i e_i^2}{n - k} $$
+
+donde `\(k\)` da el número de términos de pendiente e interceptos que estimamos (_e.g._, `\(\beta_0\)` y `\(\beta_1\)` darían `\(k=2\)`).
+
+`\(s^2\)` es un estimador insesgado de `\(\sigma^2\)`.
+
+---
+
+Luego mostramos que la varianza de `\(\hat{\beta}_1\)` (para la regresión lineal simple) es
+
+$$ \mathop{\text{Var}} \left( \hat{\beta}_1 \right) = \dfrac{s^2}{\sum_i \left( x_i - \overline{x} \right)^2} $$
+
+lo cual muestra que la varianza de nuestro estimador de pendiente
+
+1. aumenta a medida que nuestras perturbaciones se vuelven más ruidosas
+2. disminuye a medida que aumenta la varianza de `\(x\)`
+
+---
+
+*Más común:* El **error estándar** de `\(\hat{\beta}_1\)`
+
+$$ \mathop{\hat{\text{SE}}} \left( \hat{\beta}_1 \right) = \sqrt{\dfrac{s^2}{\sum_i \left( x_i - \overline{x} \right)^2}} $$
+
+*Recordemos:* El error estándar de un estimador es la desviación estándar de la distribución del estimador.
+
+---
+
+La salida de errores estándar es estándar en `lm` de .mono[R]:
+
+
+``` r
+tidy(lm(y ~ x, pop_df))
+```
+
+```
+#&gt; # A tibble: 2 × 5
+#&gt;   term        estimate std.error statistic  p.value
+#&gt;   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+#&gt; 1 (Intercept)    2.53     0.422       6.00 3.38e- 8
+#&gt; 2 x              0.567    0.0793      7.15 1.59e-10
+```
+---
+
+Usamos el error estándar de `\(\hat{\beta}_1\)`, junto con `\(\hat{\beta}_1\)` mismo, para aprender sobre el parámetro `\(\beta_1\)`.
+
+Después de derivar la distribución de `\(\hat{\beta}_1\)`,&lt;sup&gt;.pink[†]&lt;/sup&gt; se tiene dos opciones (relacionadas) para la inferencia estadística formal sobre el parámetro desconocido `\(\beta_1\)`:
+
+- **Intervalos de confianza:** Usar la estimación y su error estándar para crear un intervalo que, al repetirse, generalmente contendrá el verdadero parámetro.
+
+- **Pruebas de hipótesis:** Determinar si existe evidencia estadísticamente significativa para rechazar un valor hipotetizado.
+
+.footnote[
+.pink[†]: *Pista:* es normal, con la media y varianza que derivamos arriba
+]
+
+---
+layout: true
+# Incertidumbre e inferencia
+## Intervalos de confianza
+
+Construimos intervalos de confianza de nivel `\((1-\alpha)\)` para `\(\beta_1\)`
+$$ \hat{\beta}\_1 \pm t\_{\alpha/2,\text{df}} \, \mathop{\hat{\text{SE}}} \left( \hat{\beta}\_1 \right) $$
+
+---
+
+`\(t_{\alpha/2,\text{df}}\)` denota el cuantil `\(\alpha/2\)` de una dist. `\(t\)` con `\(n-k\)` grados de libertad.
+
+---
+
+Por ejemplo, 100 obs., dos coeficientes (_i.e._, `\(\hat{\beta}_0\)` y `\(\hat{\beta}_1 \implies k = 2\)`), y `\(\alpha = 0.05\)` (para un intervalo de confianza del 95%) nos da `\(t_{0.025,\,98} = -1.98\)`
+
+&lt;img src="02-ols_files/figure-html/t dist-1.svg" alt="" style="display: block; margin: auto;" /&gt;
+
+---
+
+**Ejemplo:**
+
+``` r
+lm(y ~ x, data = pop_df) %&gt;% tidy()
+```
+
+```
+#&gt; # A tibble: 2 × 5
+#&gt;   term        estimate std.error statistic  p.value
+#&gt;   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+#&gt; 1 (Intercept)    2.53     0.422       6.00 3.38e- 8
+*#&gt; 2 x              0.567    0.0793      7.15 1.59e-10
+```
+
+--
+
+Nuestro intervalo de confianza del 95% es entonces `\(0.567 \pm 1.98 \times 0.0793 = \left[ 0.410,\, 0.724 \right]\)`
+
+---
+layout: true
+# Incertidumbre e inferencia
+## Intervalos de confianza
+
+---
+
+Entonces tenemos un intervalo de confianza para `\(\beta_1\)`, _i.e._, `\(\left[ 0.410,\, 0.724 \right]\)`.
+
+¿Qué significa?
+
+--
+
+**Informalmente:** El intervalo de confianza nos da una región (intervalo) en la cual podemos depositar cierta confianza de que contiene al parámetro.
+
+--
+
+**Más formalmente:** Si muestreamos repetidamente de nuestra población y construimos intervalos de confianza para cada una de estas muestras, `\((1-\alpha)\)` por ciento de nuestros intervalos (_e.g._, 95%) contendrán el parámetro poblacional *en algún lugar del intervalo*.
+
+--
+
+Ahora, de vuelta a nuestra simulación...
+
+---
+
+Extrajimos 10,000 muestras (cada una de tamaño `\(n = 30\)`) de nuestra población y estimamos nuestro modelo de regresión para cada una de estas simulaciones:
+
+$$ y_i = \hat{\beta}_0 + \hat{\beta}_1 x_i + e_i $$
+&lt;center&gt;(repetido 10,000 veces)&lt;/center&gt;
+
+Ahora, estimemos intervalos de confianza del 95% para cada uno de estos intervalos...
+
+---
+
+
+
+**De nuestra simulación anterior:** 97.9% de los intervalos de confianza del 95% contienen el verdadero valor del parámetro `\(\beta_1\)`.
+
+&lt;img src="02-ols_files/figure-html/simulation ci-1.svg" alt="" style="display: block; margin: auto;" /&gt;
+
+---
+layout: true
+# Incertidumbre e inferencia
+## Pruebas de hipótesis
+
+---
+
+En muchas aplicaciones, queremos saber más que una estimación puntual o un rango de valores. Queremos saber qué dice nuestra evidencia estadística sobre teorías existentes.
+
+Queremos probar hipótesis planteadas por funcionarios, políticos, economistas, científicos, amigos, vecinos raros, *etc.*
+
+.hi-slate[Ejemplos]
+
+- ¿Aumentar la presencia policial **reduce la delincuencia**?
+- ¿Construir un muro gigante **reduce la delincuencia**?
+- ¿Cerrar el gobierno **afecta negativamente la economía**?
+- ¿El cannabis legal **reduce la conducción bajo efectos del alcohol**?
+- ¿Los estándares de calidad del aire **mejoran la salud** o **reducen los empleos**?
+
+---
+
+Las pruebas de hipótesis se basan en resultados e intuiciones muy similares.
+
+Aunque ciertamente existe incertidumbre, aún podemos construir pruebas estadísticas *confiables* (rechazando o no rechazando una hipótesis planteada).
+
+--
+
+.hi-slate[Prueba *t* de OLS] Nuestra hipótesis (nula) establece que `\(\beta_1\)` es igual a un valor `\(c\)`, _i.e._, `\(H_o:\: \beta_1 = c\)`
+
+A partir de las propiedades de OLS, podemos mostrar que el estadístico de prueba
+
+$$ t_\text{stat} = \dfrac{\hat{\beta}_1 - c}{\mathop{\hat{\text{SE}}} \left( \hat{\beta}_1 \right)} $$
+
+sigue la distribución `\(t\)` con `\(n-k\)` grados de libertad.
+
+---
+
+Para una prueba **bilateral** de nivel `\(\alpha\)`, rechazamos la hipótesis nula (y concluimos con la hipótesis alternativa) cuando
+
+$$ \left|t\_\text{stat}\right| &gt; \left|t\_{1-\alpha/2,\,df}\right| $$
+
+lo cual significa que nuestro **estadístico de prueba es más extremo que el valor crítico**.
+
+Alternativamente, podemos calcular el **valor p** que acompaña a nuestro estadístico de prueba, el cual nos da, en efecto, la probabilidad de observar nuestro estadístico de prueba *o uno más extremo* si la hipótesis nula fuera verdadera.
+
+Valores p muy pequeños (generalmente &lt; 0.05) significan que sería poco probable observar nuestros resultados si la hipótesis nula realmente fuera verdadera—tendemos a rechazar la nula para valores p menores a 0.05.
+
+---
+
+.mono[R] prueba por defecto hipótesis contra el valor cero.
+
+
+``` r
+lm(y ~ x, data = pop_df) %&gt;% tidy()
+```
+
+```
+#&gt; # A tibble: 2 × 5
+#&gt;   term        estimate std.error statistic  p.value
+#&gt;   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+#&gt; 1 (Intercept)    2.53     0.422       6.00 3.38e- 8
+*#&gt; 2 x              0.567    0.0793      7.15 1.59e-10
+```
+--
+
+H.sub[o]: `\(\beta_1 = 0\)` *vs.* H.sub[a]: `\(\beta_1 \neq 0\)`
+
+--
+
+ `\(t_\text{stat} = 7.15\)` y `\(t_\text{0.975, 28} = 2.05\)`
+--
+ lo cual implica un valor *p* `\(&lt; 0.05\)`
+
+--
+
+Por lo tanto, .hi[rechazamos H.sub[o]].
+
+---
+exclude: true
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+  "highlightStyle": "github",
+  "highlightLines": true,
+  "countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
