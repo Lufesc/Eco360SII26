@@ -503,6 +503,113 @@ Y ahora sabes de dónde viene la parte de *mínimos cuadrados* en "mínimos cuad
 Ahora pasamos a los supuestos y las propiedades (implícitas) de OLS.
 
 ---
+layout: true
+# Estimadores OLS (MCO)
+
+## Modelo clásico de regresión lineal
+
+---
+MCRP `\(\rightarrow\)` `\(Y_{i} = \beta_{0} + \beta_{1}X_{i} + u_{i}\)`
+
+MCRM `\(\rightarrow\)` `\(\widehat{Y}_{i} = \widehat{\beta}_{0} + \widehat{\beta}_{1}X_{i} + \widehat{u}_{i}\)`
+
+--
+
+Emplear el método de mínimos cuadrados
+
+`\(\widehat{u}_{i} = Y_{i} - \widehat{Y}_{i}\)`
+
+--
+
+`\(\sum_{i=1}^{n} \widehat{u}_{i} = \sum_{i=1}^{n} \left( Y_{i} - \widehat{Y}_{i} \right)\)`
+
+--
+
+`\(\sum \widehat{u}_{i}^{2} = \sum \left( Y_{i} - \widehat{Y}_{i} \right)^{2}\)`
+
+--
+
+`\(\sum \widehat{u}_{i}^{2} = \sum \left( Y_{i} - \widehat{\beta}_{0} - \widehat{\beta}_{1}X_{i} - \widehat{u}_{i} \right)^{2}\)`
+
+---
+
+Derivada parcial respecto a `\(\widehat{\beta}_{0}\)`, para obtener la primera ecuación:
+
+--
+
+`\(\frac{\partial \sum \widehat{u}_{i}^{2}}{\partial \widehat{\beta}_{0}} = 2 \sum \left( Y_{i} - \widehat{\beta}_{0} - \widehat{\beta}_{1}X_{i} - \widehat{u}_{i} \right)(-1)\)`
+
+--
+
+`\(2 \sum \left( Y_{i} - \widehat{\beta}_{0} - \widehat{\beta}_{1}X_{i} - \widehat{u}_{i} \right)(-1) = 0\)`
+
+--
+
+`\(\sum \left( -Y_{i} + \widehat{\beta}_{0} + \widehat{\beta}_{1}X_{i} + \widehat{u}_{i} \right) = 0/2\)`
+
+--
+
+`\(-\sum Y_{i} + n\widehat{\beta}_{0} + \widehat{\beta}_{1}\sum X_{i} + \sum \widehat{u}_{i} = 0\)`
+
+--
+
+`\(\sum Y_{i} = n\widehat{\beta}_{0} + \widehat{\beta}_{1}\sum X_{i}\)`
+
+---
+
+Derivada parcial respecto a `\(\widehat{\beta}_{1}\)`, para obtener la segunda ecuación:
+
+--
+
+`\(\frac{\partial \sum \widehat{u}_{i}^{2}}{\partial \widehat{\beta}_{1}} = 2 \sum \left( Y_{i} - \widehat{\beta}_{0} - \widehat{\beta}_{1}X_{i} - \widehat{u}_{i} \right)(-X_{i})\)`
+
+--
+
+`\(2 \sum \left( Y_{i} - \widehat{\beta}_{0} - \widehat{\beta}_{1}X_{i} - \widehat{u}_{i} \right)(-X_{i}) = 0\)`
+
+--
+
+`\(\sum \left( -Y_{i}X_{i} + \widehat{\beta}_{0}X_{i} + \widehat{\beta}_{1}X_{i}^{2} + \widehat{u}_{i}X_{i} \right) = 0/2\)`
+
+--
+
+`\(-\sum Y_{i}X_{i} + \widehat{\beta}_{0}\sum X_{i} + \widehat{\beta}_{1}\sum X_{i}^{2} + \sum \widehat{u}_{i}X_{i} = 0\)`
+
+--
+
+`\(\sum Y_{i}X_{i} = \widehat{\beta}_{0}\sum X_{i} + \widehat{\beta}_{1}\sum X_{i}^{2}\)`
+
+---
+
+Despejamos de las dos ecuaciones una incógnita, método de eliminación:
+
+--
+
+`\(\sum Y_{i} = n\widehat{\beta}_{0} + \widehat{\beta}_{1}\sum X_{i} \quad \Big| \times \left(-\sum X_{i}\right)\)`
+
+--
+
+`\(\sum Y_{i}X_{i} = \widehat{\beta}_{0}\sum X_{i} + \widehat{\beta}_{1}\sum X_{i}^{2} \quad \Big| \times n\)`
+
+--
+
+`\(-\sum Y_{i}\sum X_{i} = -n\widehat{\beta}_{0}\sum X_{i} - \widehat{\beta}_{1}\left( \sum X_{i} \right)^{2}\)`
+
+--
+
+`\(n\sum Y_{i}X_{i} = n\widehat{\beta}_{0}\sum X_{i} + \widehat{\beta}_{1} \, n\sum X_{i}^{2}\)`
+
+--
+
+`\(n\sum Y_{i}X_{i} - \sum Y_{i}\sum X_{i} = \widehat{\beta}_{1}\left[ n\sum X_{i}^{2} - \left(\sum X_{i}\right)^{2} \right]\)`
+
+--
+
+`\(\boxed{ \widehat{\beta}_{1} = \dfrac{n\sum Y_{i}X_{i} - \sum Y_{i}\sum X_{i}}{n\sum X_{i}^{2} - \left(\sum X_{i}\right)^{2}} }\)`
+
+
+
+---
 layout: false
 class: inverse, middle
 
@@ -618,7 +725,7 @@ count: false
 
 **Respuesta dos: Varianza.**
 
-**Perdemos de vista:** El equilibrio (trade-off) entre sesgo y varianza.
+**Perdemos de vista:** El trade-off entre sesgo y varianza.
 
 ¿Deberíamos estar dispuestos a aceptar algo de sesgo para reducir la varianza?
 
@@ -627,7 +734,7 @@ En econometría, generalmente nos apegamos a estimadores insesgados (o consisten
 ---
 layout: false
 
-# El equilibrio entre sesgo y varianza.
+# El trade-off entre sesgo y varianza.
 
 &lt;img src="02-ols_files/figure-html/variance bias-1.svg" alt="" style="display: block; margin: auto;" /&gt;
 
@@ -666,7 +773,7 @@ Distintos supuestos garantizan distintas propiedades:
 - Los supuestos (1), (2) y (3) hacen que OLS sea insesgado.
 - El supuesto (4) nos da un estimador insesgado para la varianza de nuestro estimador OLS.
 
-Durante nuestro curso, discutiremos las muchas formas en que la vida real puede **violar estos supuestos**. Por ejemplo:
+Durante el curso, discutiremos las muchas formas en que la vida real puede **violar estos supuestos**. Por ejemplo:
 
 - Relaciones no lineales en nuestros parámetros/perturbaciones (o mala especificación).
 - Perturbaciones que no están idénticamente distribuidas o no son independientes.
@@ -732,9 +839,9 @@ layout: true
 
 ## ¿Hay algo más?
 
-Hasta este punto, sabemos que OLS tiene algunas propiedades agradables, y sabemos cómo estimar un intercepto y un coeficiente de pendiente mediante OLS.
+Hasta este punto, se conoce que OLS tiene algunas propiedades agradables, y sabemos cómo estimar un intercepto y un coeficiente de pendiente mediante OLS.
 
-Nuestro flujo de trabajo actual:
+El flujo de trabajo actual:
 - Conseguir datos (puntos con valores de `\(x\)` y `\(y\)`)
 - Regresionar `\(y\)` sobre `\(x\)`
 - Graficar la línea OLS (_i.e._, `\(\hat{y} = \hat{\beta}_0 + \hat{\beta}_1\)`)
@@ -751,7 +858,7 @@ Pero ¿cómo **aprendemos** realmente algo de este ejercicio?
 - ¿Qué tan confiados deberíamos estar en la precisión de nuestras estimaciones?
 - ¿Qué tan bien explica nuestro modelo la variación que observamos en `\(y\)`?
 
-Necesitamos poder lidiar con la incertidumbre. Entra: la **Inferencia.**
+Se necesita poder lidiar con la incertidumbre. Entra: la **Inferencia.**
 
 ---
 layout: true
@@ -762,11 +869,11 @@ layout: true
 
 Como señaló nuestra simulación anterior, nuestro problema con la **incertidumbre** es que no sabemos si nuestra estimación muestral está *cerca* o *lejos* del parámetro poblacional desconocido.&lt;sup&gt;.pink[†]&lt;/sup&gt;
 
-Sin embargo, no todo está perdido. Podemos usar los errores `\(\left(e_i = y_i - \hat{y}_i\right)\)` para tener una idea de qué tan bien explica nuestro modelo la variación observada en `\(y\)`.
+No obstante, no todo está perdido. Se puede usar los errores `\(\left(e_i = y_i - \hat{y}_i\right)\)` para tener una idea de qué tan bien explica nuestro modelo la variación observada en `\(y\)`.
 
-Cuando nuestro modelo parece hacer un "buen" trabajo, podríamos confiar un poco más en usarlo para aprender sobre la relación entre `\(y\)` y `\(x\)`.
+Cuando el modelo parece hacer un "buen" trabajo, se podría confiar un poco más en usarlo para aprender sobre la relación entre `\(y\)` y `\(x\)`.
 
-Ahora solo necesitamos formalizar qué significa realmente un "buen trabajo".
+Ahora solo se necesita formalizar qué significa realmente un "buen trabajo".
 
 .footnote[
 .pink[†]: Excepto cuando nosotros mismos corremos la simulación, razón por la cual nos gustan las simulaciones.
@@ -774,7 +881,7 @@ Ahora solo necesitamos formalizar qué significa realmente un "buen trabajo".
 
 ---
 
-Primero, estimaremos la varianza de `\(u_i\)` (recordemos: `\(\mathop{\text{Var}} \left( u_i \right) = \sigma^2\)`) usando nuestros errores al cuadrado, _i.e._,
+Primero, se estima la varianza de `\(u_i\)` (recordemos: `\(\mathop{\text{Var}} \left( u_i \right) = \sigma^2\)`) usando los errores al cuadrado, _i.e._,
 
 $$ s^2 = \dfrac{\sum_i e_i^2}{n - k} $$
 
@@ -784,13 +891,13 @@ donde `\(k\)` da el número de términos de pendiente e interceptos que estimamo
 
 ---
 
-Luego mostramos que la varianza de `\(\hat{\beta}_1\)` (para la regresión lineal simple) es
+Luego se conoce que la varianza de `\(\hat{\beta}_1\)` (para la regresión lineal simple) es
 
 $$ \mathop{\text{Var}} \left( \hat{\beta}_1 \right) = \dfrac{s^2}{\sum_i \left( x_i - \overline{x} \right)^2} $$
 
-lo cual muestra que la varianza de nuestro estimador de pendiente
+lo cual muestra que la varianza del estimador de pendiente
 
-1. aumenta a medida que nuestras perturbaciones se vuelven más ruidosas
+1. aumenta a medida que las perturbaciones se vuelven más ruidosas
 2. disminuye a medida que aumenta la varianza de `\(x\)`
 
 ---
@@ -876,13 +983,13 @@ layout: true
 
 ---
 
-Entonces tenemos un intervalo de confianza para `\(\beta_1\)`, _i.e._, `\(\left[ 0.410,\, 0.724 \right]\)`.
+Entonces se tiene un intervalo de confianza para `\(\beta_1\)`, _i.e._, `\(\left[ 0.410,\, 0.724 \right]\)`.
 
 ¿Qué significa?
 
 --
 
-**Informalmente:** El intervalo de confianza nos da una región (intervalo) en la cual podemos depositar cierta confianza de que contiene al parámetro.
+**Informalmente:** El intervalo de confianza nos da una región (intervalo) en la cual se puede depositar cierta confianza de que contiene al parámetro.
 
 --
 
@@ -916,7 +1023,7 @@ layout: true
 
 ---
 
-En muchas aplicaciones, queremos saber más que una estimación puntual o un rango de valores. Queremos saber qué dice nuestra evidencia estadística sobre teorías existentes.
+En muchas aplicaciones, se quiere saber más que una estimación puntual o un rango de valores. Queremos saber qué dice nuestra evidencia estadística sobre teorías existentes.
 
 Queremos probar hipótesis planteadas por funcionarios, políticos, economistas, científicos, amigos, vecinos raros, *etc.*
 
@@ -938,7 +1045,7 @@ Aunque ciertamente existe incertidumbre, aún podemos construir pruebas estadís
 
 .hi-slate[Prueba *t* de OLS] Nuestra hipótesis (nula) establece que `\(\beta_1\)` es igual a un valor `\(c\)`, _i.e._, `\(H_o:\: \beta_1 = c\)`
 
-A partir de las propiedades de OLS, podemos mostrar que el estadístico de prueba
+A partir de las propiedades de OLS, se puede mostrar que el estadístico de prueba
 
 $$ t_\text{stat} = \dfrac{\hat{\beta}_1 - c}{\mathop{\hat{\text{SE}}} \left( \hat{\beta}_1 \right)} $$
 
@@ -946,13 +1053,13 @@ sigue la distribución `\(t\)` con `\(n-k\)` grados de libertad.
 
 ---
 
-Para una prueba **bilateral** de nivel `\(\alpha\)`, rechazamos la hipótesis nula (y concluimos con la hipótesis alternativa) cuando
+Para una prueba **bilateral** de nivel `\(\alpha\)`, se rechaza la hipótesis nula (y concluye con la hipótesis alternativa) cuando
 
 $$ \left|t\_\text{stat}\right| &gt; \left|t\_{1-\alpha/2,\,df}\right| $$
 
 lo cual significa que nuestro **estadístico de prueba es más extremo que el valor crítico**.
 
-Alternativamente, podemos calcular el **valor p** que acompaña a nuestro estadístico de prueba, el cual nos da, en efecto, la probabilidad de observar nuestro estadístico de prueba *o uno más extremo* si la hipótesis nula fuera verdadera.
+Alternativamente, se puede calcular el **valor p** que acompaña a nuestro estadístico de prueba, el cual nos da, en efecto, la probabilidad de observar nuestro estadístico de prueba *o uno más extremo* si la hipótesis nula fuera verdadera.
 
 Valores p muy pequeños (generalmente &lt; 0.05) significan que sería poco probable observar nuestros resultados si la hipótesis nula realmente fuera verdadera—tendemos a rechazar la nula para valores p menores a 0.05.
 
@@ -984,7 +1091,7 @@ H.sub[o]: `\(\beta_1 = 0\)` *vs.* H.sub[a]: `\(\beta_1 \neq 0\)`
 
 --
 
-Por lo tanto, .hi[rechazamos H.sub[o]].
+Por lo tanto, .hi[se rechaza H.sub[o]].
 
 ---
 exclude: true
