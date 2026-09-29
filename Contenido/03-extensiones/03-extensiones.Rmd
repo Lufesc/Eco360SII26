@@ -1,0 +1,660 @@
+---
+title: "Extensiones del Modelo de Regresión Lineal"
+subtitle: "Eco 360, Unidad 2"
+author: "Luis Fernando Escobar"
+date: "II Semestre 2026"
+output:
+  xaringan::moon_reader:
+    css: ['default', 'metropolis', 'metropolis-fonts', 'my-css.css']
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+class: inverse, middle
+
+```{r Setup, include = F}
+options(htmltools.dir.version = FALSE)
+library(pacman)
+p_load(ggplot2, ggthemes, dplyr, magrittr, knitr, latex2exp)
+# Colores
+red_pink <- "#e64173"
+turquoise <- "#20B2AA"
+orange <- "#FFA500"
+grey_dark <- "grey20"
+# Opciones de knitr
+opts_chunk$set(
+  comment = "#>",
+  fig.align = "center",
+  fig.height = 6.25,
+  fig.width = 10.5,
+  warning = F,
+  message = F,
+  echo = F
+)
+# Tema vacío estilo xaringan
+theme_empty <- theme_bw() + theme(
+  line = element_blank(),
+  rect = element_blank(),
+  strip.text = element_blank(),
+  axis.text = element_blank(),
+  plot.title = element_blank(),
+  axis.title = element_text(size = 16),
+  legend.position = "none"
+)
+```
+
+```{css, echo = F}
+@media print {
+  .has-continuation {
+    display: block !important;
+  }
+}
+```
+
+# Introducción
+
+---
+# Introducción
+
+Algunos aspectos del análisis de regresión lineal se insertan bien en el marco del modelo de regresión lineal con dos variables que hemos analizado hasta ahora<sup>†</sup>. Ahora veremos:
+
+1. **Regresión a través del origen** — modelos sin intercepto ( $\beta_1$ ausente)
+
+2. **Unidades de medición** — cómo afecta la escala de $X$ y $Y$ a los resultados
+
+3. **Variables estandarizadas** — coeficientes beta
+
+4. **Formas funcionales** — modelos no lineales en las variables pero lineales en los parámetros
+
+--
+.footnote[
+[†]:**Nota:** la teoría de regresión sólo exige linealidad en los **parámetros**; las variables pueden entrar de forma no lineal (logaritmos, recíprocos, potencias). La extensión a la regresión múltiple (MCRLM) es directa.
+]
+
+---
+class: inverse, middle
+
+# Regresión a través del origen
+
+---
+layout: true
+# Regresión a través del origen
+
+---
+
+Hay ocasiones en que la función de regresión poblacional (FRP) de dos variables no tiene intercepto: $Y_i = \beta_2 X_i + u_i$
+
+El término del intercepto está ausente (o es cero) — de ahí el nombre **regresión a través del origen**.
+
+--
+
+**Ejemplo clásico: el CAPM** (Capital Asset Pricing Model)
+
+$$ (ER_i - r_f) = \beta_i (ER_m - r_f) $$
+
+donde
+
+- $ER_i$: rendimiento esperado del título $i$
+- $ER_m$: rendimiento esperado del portafolio de mercado
+- $r_f$: tasa libre de riesgo
+- $\beta_i$: riesgo sistemático (Beta<sup>†</sup>)
+
+--
+.footnote[
+[†]: Si $\beta_i > 1 \Rightarrow$ título volátil/riesgoso. Si $\beta_i < 1 \Rightarrow$ título seguro.
+]
+
+---
+
+Para fines empíricos, el CAPM se expresa como
+
+$$ R_i - r_f = \beta_i (R_m - r_f) + u_i $$
+
+o, con intercepto explícito (**Modelo del Mercado**),
+
+$$ R_i - r_f = \alpha_i + \beta_i (R_m - r_f) + u_i $$
+
+Si el CAPM es válido, se espera que $\alpha_i = 0$.
+
+--
+
+**Otros ejemplos de intercepto cero:**
+
+- Hipótesis del ingreso permanente de Friedman (consumo permanente $\propto$ ingreso permanente)
+- Teoría del análisis de costos (costo de producción $\propto$ producción)
+- Algunas versiones de la teoría monetarista (inflación $\propto$ tasa de cambio de la oferta monetaria)
+
+---
+
+## Estimación por MCO
+
+FRM: $\quad Y_i = \hat{\beta}_2 X_i + \hat{u}_i$
+
+Aplicando MCO se obtiene
+
+$$ \hat{\beta}_2 = \dfrac{\sum X_i Y_i}{\sum X_i^2} \qquad \mathop{\text{var}}(\hat{\beta}_2) = \dfrac{\sigma^2}{\sum X_i^2} $$
+
+donde $\hat{\sigma}^2 = \dfrac{\sum \hat{u}_i^2}{n-1}$.
+
+--
+
+**Comparación con el modelo con intercepto:**
+
+$$ \hat{\beta}_2 = \dfrac{\sum x_i y_i}{\sum x_i^2} \qquad \mathop{\text{var}}(\hat{\beta}_2) = \dfrac{\sigma^2}{\sum x_i^2} \qquad \hat{\sigma}^2 = \dfrac{\sum \hat{u}_i^2}{n-2} $$
+
+---
+
+## Diferencias clave
+
+- Sin intercepto: sumas de cuadrados **simples** (no centradas en la media)
+- Con intercepto: sumas de cuadrados **ajustadas** por la media
+- Grados de libertad: $(n-1)$ *vs.* $(n-2)$
+
+## Advertencias sobre este modelo
+
+1. $\sum \hat{u}_i$ **no** necesariamente es cero (sí lo es en el modelo con intercepto).
+
+2. El $r^2$ convencional puede tomar valores **negativos** en modelos sin intercepto. Por ello, su interpretación habitual no resulta apropiada en este caso, dado que presupone la inclusión de un término constante.
+
+---
+
+
+**Solución: el $r^2$ simple ("crudo")**
+
+$$ r^2_{\text{simple}} = \dfrac{\left( \sum X_i Y_i \right)^2}{\sum X_i^2 \sum Y_i^2} $$
+
+Satisface $0 < r^2 < 1$, pero **no es comparable** con el $r^2$ convencional.
+
+--
+
+**Recomendación práctica:** a menos que exista una razón teórica sólida para excluirlo, es preferible incluir el intercepto en el modelo. Si este resulta no significativo, puede considerarse, para fines prácticos, una especificación que pasa por el origen, sin asumir desde el inicio una restricción que podría generar un error de especificación.
+
+---
+layout: false
+
+# Ejemplo: Rendimientos accionarios
+
+Datos mensuales (1980–1999, $n=240$): rendimientos excedentes de un índice de bienes de consumo ( $Y$ ) *vs.* rendimientos excedentes del mercado ( $X$ ).
+
+**Con intercepto cero:**
+
+$$ \hat{R}_i - r_f = 1.1555 \, (R_m - r_f) \qquad \text{ee} = (0.0744) \qquad t = 15.53 $$
+
+**Con intercepto:**
+
+$$ \hat{R}_i - r_f = -0.4475 + 1.1711 \, (R_m - r_f) \qquad \text{ee} = (0.3629)\ (0.0754) $$
+
+--
+
+**Interpretación:**
+- El intercepto **no** es significativo (p-value=0.22) $\Rightarrow$ el modelo a través del origen se ajusta bien.
+
+---
+# Continuación...
+
+- El coeficiente de pendiente (Beta) es significativamente **mayor que 1** $\Rightarrow$ título volátil (consistente con ser bienes de consumo cíclico).
+- El error estándar de la pendiente es ligeramente **menor** sin intercepto — la pendiente se estima con más precisión (Theil, 1978).
+
+---
+class: inverse, middle
+
+# Escalas y unidades de medición
+
+---
+layout: true
+# Escalas y unidades de medición
+
+---
+
+¿Cambian los resultados de una regresión si $X$ y $Y$ se miden en miles de millones *vs.* millones de dólares?
+
+Sea el modelo original: $Y_i = \hat{\beta}_1 + \hat{\beta}_2 X_i + \hat{u}_i$
+
+y definamos las variables reescaladas
+
+$$ 
+\begin{aligned}
+Y_i^{*} = w_1 Y_i \qquad X_i^{*} = w_2 X_i 
+\end{aligned}
+$$
+
+donde $w_1, w_2$ son **factores de escala** (pueden ser iguales o distintos).
+
+--
+
+Regresionando $Y^*$ sobre $X^*$:
+
+$$ 
+\begin{aligned}
+Y_i^{*} = \hat{\beta}_1^{*} + \hat{\beta}_2^{*} X_i^{*} + \hat{u}_i^{*}
+\end{aligned}
+$$
+
+**Pregunta central:** ¿cómo se relacionan $\hat{\beta}_1^*, \hat{\beta}_2^*, \mathop{\text{var}}(\cdot)^*$ con sus versiones originales?
+
+---
+
+## Resultados
+
+$$
+\begin{aligned}
+  \hat{\beta}_2^{*} &= \dfrac{w_1}{w_2} \, \hat{\beta}_2 \\[0.3em]
+  \hat{\beta}_1^{*} &= w_1 \, \hat{\beta}_1 \\[0.3em]
+  \hat{\sigma}^{*2} &= w_1^2 \, \hat{\sigma}^2 \\[0.3em]
+  \mathop{\text{var}}(\hat{\beta}_1^{*}) &= w_1^2 \, \mathop{\text{var}}(\hat{\beta}_1) \\[0.3em]
+  \mathop{\text{var}}(\hat{\beta}_2^{*}) &= \left(\dfrac{w_1}{w_2}\right)^2 \mathop{\text{var}}(\hat{\beta}_2) \\[0.3em]
+  r^2_{xy} &= r^2_{x^{*}y^{*}}
+\end{aligned}
+$$
+---
+
+**Casos especiales:**
+
+- Si $w_1 = w_2$: la pendiente y su error estándar **no cambian**; el intercepto se multiplica por $w_1$.
+
+--
+
+- Si sólo cambia la escala de $Y$ (por $w_1$, con $w_2=1$): pendiente **e** intercepto (y sus errores estándar) se multiplican por $w_1$.
+
+--
+
+- Si sólo cambia la escala de $X$ (por $w_2$, con $w_1=1$): la pendiente y su error estándar se multiplican por $1/w_2$; el intercepto **no cambia**.
+
+--
+
+- El $r^2$ **nunca** cambia — es adimensional.
+
+---
+layout: false
+
+# Ejemplo: IDPB y PIB (US, 1990–2005)
+
+**Miles de millones de dólares:**
+
+$$ \widehat{\text{IDPB}}_t = -926.090 + 0.2535 \, \text{PIB}_t \qquad \text{ee} = (116.358)\ (0.0129) \qquad r^2 = 0.9648 $$
+
+**Millones de dólares** ( $w_1 = 1{,}000$ ):
+
+$$ \widehat{\text{IDPB}}_t = -926{,}090 + 0.2535 \, \text{PIB}_t \qquad \text{ee} = (116{,}358)\ (0.0129) $$
+
+*El intercepto se multiplica por 1,000; la pendiente no cambia.*
+
+--
+
+**IDPB en miles de millones, PIB en millones** ( $w_2 = 1{,}000$ ):
+
+$$ \widehat{\text{IDPB}}_t = -926.090 + 0.0002535 \, \text{PIB}_t $$
+
+*La pendiente se divide entre 1,000; el intercepto no cambia.*
+
+---
+
+**Advertencia de interpretación:** $\beta_2$ se mide en la razón
+
+$$ \dfrac{\text{unidades de } Y}{\text{unidades de } X} $$
+
+Cambiar de escala no altera la relación económica — sólo su expresión numérica.
+
+---
+class: inverse, middle
+
+# Regresión sobre variables estandarizadas
+
+---
+layout: true
+# Variables estandarizadas
+
+---
+
+Se evita el problema de las unidades si ambas variables se **estandarizan**:
+
+$$ 
+\begin{aligned}
+Y_i^{*} = \dfrac{Y_i - \overline{Y}}{S_Y} \qquad X_i^{*} = \dfrac{X_i - \overline{X}}{S_X}
+\end{aligned}
+$$
+
+Una variable estandarizada siempre tiene **media 0** y **desviación estándar 1**.
+
+--
+
+Como el intercepto es $\overline{Y}^* - \hat{\beta}_2^* \overline{X}^*$ y ambas medias son cero, el intercepto de la regresión estandarizada **siempre es cero**:
+
+$$ 
+\begin{aligned}
+Y_i^{*} = \beta_2^{*} X_i^{*} + u_i^{*}
+\end{aligned}
+$$
+
+$\Rightarrow$ ¡es una regresión a través del origen!
+
+---
+
+Los coeficientes $\beta_2^*$ se llaman **coeficientes beta**, y se relacionan con los coeficientes convencionales por
+
+$$ \hat{\beta}_2^{*} = \hat{\beta}_2 \, \dfrac{S_X}{S_Y} $$
+
+--
+
+## Interpretación
+
+Si la regresora (estandarizada) aumenta **una desviación estándar**, en promedio la regresada (estandarizada) aumenta $\beta_2^*$ desviaciones estándar.
+
+---
+
+
+**Ejemplo (continuación de IDPB/PIB):**
+
+Modelo convencional: $\quad \widehat{\text{IDPB}}_t = -926.090 + 0.2535 \, \text{PIB}_t$
+
+Modelo estandarizado: $\quad \widehat{\text{IDPB}}_t^{*} = 0.9822 \, \text{PIB}_t^{*} \qquad \text{ee} = (0.0485)$
+
+*Interpretación:* si el PIB (estandarizado) aumenta una desviación estándar, la IDPB (estandarizada) aumenta casi 0.98 desviaciones estándar.
+
+--
+
+**Ventaja principal:** con múltiples regresoras (MCRLM), estandarizar permite **comparar directamente** la fuerza relativa de cada variable explicativa, sin importar sus unidades originales.
+
+---
+layout: false
+class: inverse, middle
+
+# Formas funcionales
+
+---
+layout: true
+# Formas funcionales
+
+---
+
+Modelos **no lineales en las variables** pero **lineales en los parámetros** (se estiman con MCO tras una transformación):
+
+.pseudocode-small[
+1. **Log-lineal** (log-log / doble-log) — elasticidad constante
+2. **Semilogarítmicos** — log-lin y lin-log — tasas de crecimiento
+3. **Recíprocos** — valores asintóticos (curva de Phillips)
+4. **Log-recíproco** — funciones de producción de corto plazo
+]
+
+---
+
+```{R, forms plot, dev = "svg", fig.height = 7.5}
+set.seed(1)
+x <- seq(0.2, 10, length.out = 200)
+df_forms <- data.frame(
+  x = rep(x, 3),
+  y = c(5 * x^0.7, 20 - 25/x, 15 * log(x) + 10),
+  tipo = rep(c("Log-lineal (elasticidad cte.)", "Recíproco (asintótico)", "Lin-log (crecimiento decreciente)"), each = length(x))
+)
+ggplot(df_forms, aes(x = x, y = y, color = tipo)) +
+  geom_line(size = 1.3) +
+  scale_color_manual(values = c(red_pink, turquoise, orange)) +
+  theme_empty +
+  theme(legend.position = "bottom", legend.title = element_blank(), text = element_text(size = 14))
+```
+
+---
+
+## Modelo log-lineal (log-log)
+
+$$ Y_i = \beta_1 X_i^{\beta_2} e^{u_i} \quad \Longleftrightarrow \quad \ln Y_i = \ln \beta_1 + \beta_2 \ln X_i + u_i $$
+
+Escribiendo $\alpha = \ln \beta_1$:
+
+$$ \ln Y_i = \alpha + \beta_2 \ln X_i + u_i $$
+
+Lineal en $\alpha$, $\beta_2$ y en los **logaritmos** de $Y$ y $X$ $\Rightarrow$ se estima directamente por MCO.
+
+--
+
+**Propiedad clave:** $\beta_2$ es la **elasticidad** de $Y$ respecto de $X$
+
+$$ \beta_2 = \dfrac{dY/Y}{dX/X} $$
+
+$\Rightarrow$ modelo de **elasticidad constante**: no importa en qué punto se mida, $\beta_2$ es la misma.
+
+*Nota:* $\hat{\beta}_1 = \text{antilog}(\hat{\alpha})$ es un estimador **sesgado**, aunque $\hat{\alpha}$ y $\hat{\beta}_2$ no lo son.
+
+---
+
+### Ejemplo: Gasto en bienes duraderos
+
+$$ \widehat{\ln \text{GASBD}}_t = -7.5417 + 1.6266 \, \ln \text{GCPERT}_t \qquad r^2 = 0.9695 $$
+
+**Interpretación:** si el gasto de consumo personal total aumenta 1%, el gasto en bienes duraderos aumenta, en promedio, **1.63%** — muy sensible.
+
+---
+
+## Modelos semilogarítmicos
+
+### Log-lin: medir tasas de crecimiento
+
+De la fórmula del interés compuesto $Y_t = Y_0 (1+r)^t$, tomando logaritmos:
+
+$$ \ln Y_t = \beta_1 + \beta_2 t + u_t $$
+
+donde $\beta_1 = \ln Y_0$ y $\beta_2 = \ln(1+r)$.
+
+--
+
+$\beta_2$ da el cambio **relativo** en $Y$ por cambio **absoluto** en $t$:
+
+$$ \beta_2 = \dfrac{\text{cambio relativo en } Y}{\text{cambio absoluto en } X} \qquad \Longrightarrow \qquad 100 \times \beta_2 = \text{tasa de crecimiento (%)} $$
+
+$100 \times \beta_2$ se llama **semielasticidad** de $Y$ respecto de $X$.
+
+---
+
+**Ejemplo: Gasto en servicios**
+
+$$ \widehat{\ln \text{GES}}_t = 8.3226 + 0.00705\, t \qquad r^2 = 0.9919 $$
+
+El gasto en servicios creció a una tasa **trimestral** de 0.705% (≈ 2.82% anual).
+
+**Nota:** tasa instantánea $\beta_2$ *vs.* tasa compuesta $= [\text{antilog}(\beta_2) - 1] \times 100$.
+
+---
+
+### Modelo de tendencia lineal *vs.* log-lin
+
+Alternativa: regresar $Y$ (sin logaritmo) sobre el tiempo
+
+$$ Y_t = \beta_1 + \beta_2 t + u_t $$
+
+Ejemplo: $\quad \hat{\text{GES}}_t = 4{,}111.545 + 30.674\, t \qquad r^2 = 0.9935$
+
+*Interpretación:* el gasto en servicios creció, en promedio, **30,674 millones de dólares por trimestre** (cambio **absoluto**, no relativo).
+
+**Advertencia:** los $r^2$ de ambos modelos **no son comparables** — las variables dependientes son distintas ( $\ln Y$ *vs.* $Y$ ).
+
+---
+
+### Lin-log: cambio absoluto ante cambio porcentual
+
+$$ Y_i = \beta_1 + \beta_2 \ln X_i + u_i $$
+
+$$ \beta_2 = \dfrac{\Delta Y}{\Delta X / X} \qquad \Longrightarrow \qquad \Delta Y = \beta_2 (\Delta X / X) $$
+
+Si $X$ cambia 1% ( $\Delta X/X = 0.01$ ), el cambio absoluto en $Y$ es $0.01\,\beta_2$.
+
+--
+
+**Ejemplo: Ley de Engel (gasto en alimentos)**
+
+$$ \widehat{\text{GasAli}}_i = -1{,}283.912 + 257.27 \, \ln \text{GasTot}_i \qquad r^2 = 0.3769 $$
+
+*Interpretación:* un aumento de 1% en el gasto total incrementa, en promedio, el gasto en alimentos en **2.57 unidades monetarias** (257.27 / 100).
+
+**Aplicación adicional:** la transformación logarítmica reduce la asimetría y heteroscedasticidad — común en salarios, tamaño de empresas, ingreso.
+
+---
+
+## Modelos recíprocos
+
+$$ Y_i = \beta_1 + \beta_2 \left(\dfrac{1}{X_i}\right) + u_i $$
+
+No lineal en $X$ (entra de forma recíproca), pero **lineal en los parámetros**.
+
+--
+
+```{R, reciprocal plot, dev = "svg", fig.height = 3.5}
+x <- seq(0.3, 10, length.out = 200)
+df_rec <- data.frame(x = x, y = 80 + 25/x)
+ggplot(df_rec, aes(x = x, y = y)) +
+  geom_hline(yintercept = 80, linetype = "dashed", color = "grey50") +
+  geom_line(size = 1.3, color = red_pink) +
+  annotate("text", x = 8, y = 83, label = TeX("$\\beta_1$ (valor asintótico)"), size = 5) +
+  theme_empty
+```
+
+Conforme $X \to \infty$, $Y \to \beta_1$ (valor **asintótico**). Útil cuando existe un límite teórico.
+
+---
+
+### Ejemplo: Mortalidad infantil y PIB per cápita
+
+$$ \widehat{\text{MI}}_i = 81.79 + 27{,}237.17 \left(\dfrac{1}{\text{PIBPC}_i}\right) \qquad r^2 = 0.4590 $$
+
+Conforme el PIB per cápita crece indefinidamente, la mortalidad infantil se aproxima a **≈ 82 muertes por mil**.
+
+---
+
+### La curva de Phillips (aplicación clásica del modelo recíproco)
+
+Relaciona el cambio en la tasa de inflación con la tasa de desempleo:
+
+$\pi_t - \pi_{t-1} = \beta_1 + \beta_2 \, \text{UN}_t + u_t$
+
+**Ejemplo (US, 1960–2006):**
+
+Modelo lineal: $\quad \widehat{(\pi_t - \pi_{t-1})} = 3.7844 - 0.6385\,\text{UN}_t \qquad r^2 = 0.2935$
+
+Modelo recíproco: $\quad \widehat{(\pi_t - \pi_{t-1})} = -3.0684 + 17.2077 \left(\frac{1}{\text{UN}_t}\right) \qquad r^2 = 0.1973$
+
+Tasa natural de desempleo implícita: $\; \text{UN}^{*} = \hat{\beta}_1 / (-\hat{\beta}_2) \approx 5.93\%$
+
+---
+
+## Modelo log-recíproco (log hipérbola)
+
+$$ \ln Y_i = \beta_1 - \beta_2 \left(\dfrac{1}{X_i}\right) + u_i $$
+
+```{R, log reciprocal plot, dev = "svg", fig.height = 5.5}
+x <- seq(0.1, 10, length.out = 200)
+df_lr <- data.frame(x = x, y = exp(3 - 2/x))
+ggplot(df_lr, aes(x = x, y = y)) +
+  geom_line(size = 1.3, color = turquoise) +
+  theme_empty
+```
+
+
+---
+layout: false
+
+# Resumen: Pendientes y elasticidades
+
+| Modelo | Ecuación | Pendiente $dY/dX$ | Elasticidad |
+|---|---|---|---|
+| Lineal | $Y=\beta_1+\beta_2X$ | $\beta_2$ | $\beta_2(X/Y)$ |
+| Log-lineal | $\ln Y=\beta_1+\beta_2\ln X$ | $\beta_2(Y/X)$ | $\beta_2$ |
+| Log-lin | $\ln Y=\beta_1+\beta_2X$ | $\beta_2 Y$ | $\beta_2 X$ |
+| Lin-log | $Y=\beta_1+\beta_2\ln X$ | $\beta_2/X$ | $\beta_2/Y$ |
+| Recíproco | $Y=\beta_1+\beta_2(1/X)$ | $-\beta_2/X^2$ | $-\beta_2/(XY)$ |
+| Log-recíproco | $\ln Y=\beta_1-\beta_2(1/X)$ | $\beta_2 Y/X^2$ | $\beta_2/X$ |
+
+
+---
+class: inverse, middle
+
+# El término de error
+
+---
+layout: true
+# Error: aditivo *vs.* multiplicativo
+
+---
+
+Considera $Y_i = \beta_1 X_i^{\beta_2}$ (sin error). Tres formas de introducir la perturbación:
+
+$$
+\begin{aligned}
+  Y_i &= \beta_1 X_i^{\beta_2} \, u_i &&\text{(multiplicativo)} \\
+  Y_i &= \beta_1 X_i^{\beta_2} \, e^{u_i} &&\text{(exponencial)} \\
+  Y_i &= \beta_1 X_i^{\beta_2} + u_i &&\text{(aditivo)}
+\end{aligned}
+$$
+
+--
+
+Los dos primeros son **intrínsecamente lineales** (se linealizan al tomar logaritmos):
+
+$$ \ln Y_i = \alpha + \beta_2 \ln X_i + \ln u_i \qquad \text{o} \qquad \ln Y_i = \alpha + \beta_2 \ln X_i + u_i $$
+
+El tercero es **intrínsecamente no lineal** — no existe transformación logarítmica simple porque $\ln(A+B) \neq \ln A + \ln B$. Requiere estimación no lineal (iterativa).
+
+---
+
+**Implicación práctica:** para usar el modelo clásico de regresión lineal normal (MCRLN) en la versión logarítmica, se debe suponer
+
+$$ \ln u_i \sim N(0, \sigma^2) $$
+
+$\Rightarrow$ hay que aplicar las **pruebas de normalidad** (test JB) a los **residuos de la regresión transformada**, no a los residuos del modelo original.
+
+**Nota:** al transformar un modelo para el análisis de regresión, hay que prestar mucha atención a las propiedades del término de error — una aplicación ciega de MCO al modelo transformado no garantiza las propiedades estadísticas deseables.
+
+---
+layout: false
+
+# Elección de la forma funcional
+
+Algunas guías prácticas:
+
+1. **La teoría** puede sugerir directamente una forma (p. ej., la curva de Phillips).
+
+2. Calcular y comparar la **pendiente** y la **elasticidad** de los modelos candidatos (ver tabla resumen).
+
+3. Los coeficientes deben satisfacer las **expectativas a priori** (p. ej., signo negativo del precio en una función de demanda).
+
+4. Cuando compares el $r^2$ de dos modelos, la **variable dependiente debe ser la misma** (ln Y o Y, pero no ambas a la vez).
+
+5. **No sobrevalorar el $r^2$**: éste aumenta mecánicamente al agregar regresoras. Priorizar la justificación teórica y la significancia estadística de los coeficientes.
+
+6. Si ninguna forma es evidente, existen las **transformaciones Box-Cox**.
+
+---
+class: inverse, middle
+
+# En resumen
+
+---
+# En resumen
+
+- La **regresión a través del origen** es útil cuando la teoría lo exige, pero requiere cautela: $\sum \hat{u}_i \neq 0$ y el $r^2$ convencional puede no tener sentido.
+
+- Las **unidades de medición** de $Y$ y $X$ afectan directamente la magnitud (no el significado económico) de los coeficientes — siempre hay que documentar cómo se midieron las variables.
+
+- **Estandarizar** las variables produce coeficientes beta, comparables entre regresoras sin importar sus unidades — especialmente útil en regresión múltiple.
+
+- La **forma funcional** (log-lineal, semilog, recíproco, log-recíproco) determina la interpretación de los coeficientes: pendiente, elasticidad, semielasticidad.
+
+---
+# En resumen
+
+- Hay que prestar atención al **término de error** al transformar un modelo — no todas las transformaciones son intrínsecamente lineales.
+
+- Estas ideas se extienden de forma natural a la **regresión múltiple** — con más álgebra, pero los mismos conceptos fundamentales.
+
+---
+layout: false
+class: inverse, middle
+
+# Siguiente: Modelo clásico de regresión lineal múltiple
+
+---
+exclude: true
+
+```{R, print pdfs, echo = F, eval = T}
+pagedown::chrome_print(input = "03-extensiones.html")
+```
+
