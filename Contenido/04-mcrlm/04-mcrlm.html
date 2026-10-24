@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Modelo Clásico de Regresión Lineal Múltiple</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Luis Fernando Escobar" />
+    <script src="04-mcrlm_files/header-attrs/header-attrs.js"></script>
+    <link href="04-mcrlm_files/remark-css/default.css" rel="stylesheet" />
+    <link href="04-mcrlm_files/remark-css/metropolis.css" rel="stylesheet" />
+    <link href="04-mcrlm_files/remark-css/metropolis-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="my-css.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Modelo Clásico de Regresión Lineal Múltiple
+]
+.subtitle[
+## Eco 360, Unidad 3
+]
+.author[
+### Luis Fernando Escobar
+]
+.date[
+### II Semestre 2026
+]
+
+---
+
+class: inverse, middle
+
+
+
+
+
+&lt;style type="text/css"&gt;
+@media print {
+  .has-continuation {
+    display: block !important;
+  }
+}
+&lt;/style&gt;
+
+# Introducción
+
+---
+# Introducción
+
+El modelo con dos variables, estudiado con amplitud en los unidades anteriores, suele ser inadecuado en la práctica.
+
+- Caso consumo-ingreso: se supuso implícitamente que sólo el ingreso `\(X\)` se relaciona con el consumo `\(Y\)`.
+- La teoría económica rara vez es tan simple: muchas otras variables probablemente afectan el gasto de consumo (ej. la riqueza del consumidor).
+- La demanda de un bien suele depender no sólo de su propio precio, sino también de precios de bienes competitivos, del ingreso, de la condición social, etc.
+
+--
+
+`\(\Rightarrow\)` se necesita ampliar el modelo simple de regresión con dos variables para considerar modelos con **más de dos variables**: el **análisis de regresión múltiple**.
+
+
+
+---
+class: inverse, middle
+
+# Regresión múltiple
+---
+layout: true
+# Regresión múltiple
+---
+
+## Más variables explicativas
+
+Pasamos de la **regresión lineal simple** (una .pink[variable de resultado] y una .purple[variable explicativa])
+
+$$ \color{#e64173}{y_i} = \beta_0 + \beta_1 \color{#6A5ACD}{x_i} + u_i $$
+
+hacia el terreno de la **regresión lineal múltiple** (una .pink[variable de resultado] y múltiples .purple[variables explicativas])
+
+$$ \color{#e64173}{y\_i} = \beta\_0 + \beta\_1 \color{#6A5ACD}{x\_{1i}} + \beta\_2 \color{#6A5ACD}{x\_{2i}} + \cdots + \beta\_k \color{#6A5ACD}{x\_{ki}} + u\_i $$
+
+--
+
+**¿Por qué?**
+--
+ Podemos explicar mejor la variación en `\(y\)`, mejorar las predicciones, evitar el sesgo por variable omitida, ...
+
+---
+
+
+
+`\(y_i = \beta_0 + \beta_1 x_{1i} + \beta_2 x_{2i} + u_i \quad\)` `\(x_1\)` es continua `\(\quad x_2\)` es categórica
+
+&lt;img src="04-mcrlm_files/figure-html/mult reg plot 1-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+count: false
+
+El intercepto y la variable categórica `\(x_2\)` controlan por las medias de los grupos.
+
+&lt;img src="04-mcrlm_files/figure-html/mult reg plot 2-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+count: false
+
+Con las medias de los grupos removidas:
+
+&lt;img src="04-mcrlm_files/figure-html/mult reg plot 3-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+count: false
+
+`\(\hat{\beta}_1\)` estima la relación entre `\(y\)` y `\(x_1\)` después de controlar por `\(x_2\)`.
+
+&lt;img src="04-mcrlm_files/figure-html/mult reg plot 4-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+count: false
+
+Otra forma de pensarlo:
+
+&lt;img src="04-mcrlm_files/figure-html/mult reg plot 5-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+
+Ver nuestro estimador también puede ayudar.
+
+Para la regresión lineal simple `\(y_i = \beta_0 + \beta_1 x_i + u_i\)`
+
+$$
+`\begin{aligned}
+  \hat{\beta}_1 &amp;= \\[0.3em]
+  &amp;= \dfrac{\sum_i \left( x_i - \overline{x} \right) \left( y_i - \overline{y} \right)}{\sum_i \left( x_i -\overline{x} \right)} \\[0.3em]
+  &amp;= \dfrac{\sum_i \left( x_i - \overline{x} \right) \left( y_i - \overline{y} \right)/(n-1)}{\sum_i \left( x_i -\overline{x} \right) / (n-1)} \\[0.3em]
+  &amp;= \dfrac{\mathop{\hat{\text{Cov}}}(x,\,y)}{\mathop{\hat{\text{Var}}} \left( x \right)}
+\end{aligned}`
+$$
+
+---
+
+Estimador de la regresión lineal simple:
+
+$$ \hat{\beta}_1 = \dfrac{\mathop{\hat{\text{Cov}}}(x,\,y)}{\mathop{\hat{\text{Var}}} \left( x \right)} $$
+
+al pasar a la regresión lineal múltiple, el estimador cambia ligeramente:
+
+$$ \hat{\beta}_1 = \dfrac{\mathop{\hat{\text{Cov}}}(\color{#e64173}{\tilde{x}_1},\,y)}{\mathop{\hat{\text{Var}}} \left( \color{#e64173}{\tilde{x}_1} \right)} $$
+
+donde `\(\color{#e64173}{\tilde{x}_1}\)` es la variable `\(x_1\)` *residualizada*—la variación que queda en `\(x\)` después de controlar por las demás variables explicativas.
+
+---
+
+Más formalmente, considera el modelo de regresión múltiple
+
+$$ y_i = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_3 + u_i $$
+
+Nuestra `\(x_{1}\)` residualizada (que llamamos `\(\color{#e64173}{\tilde{x}_1}\)`) proviene de regresionar `\(x_1\)` sobre un intercepto y todas las demás variables explicativas, recolectando los residuos, _es decir_,
+
+$$
+`\begin{aligned}
+  \hat{x}_{1i} &amp;= \hat{\gamma}_0 + \hat{\gamma}_2 \, x_{2i} + \hat{\gamma}_3 \, x_{3i} \\
+  \color{#e64173}{\tilde{x}_{1i}} &amp;= x_{1i} - \hat{x}_{1i}
+\end{aligned}`
+$$
+
+--
+
+lo que nos permite entender mejor nuestro estimador de regresión múltiple por MCO
+
+$$ \hat{\beta}_1 = \dfrac{\mathop{\hat{\text{Cov}}}(\color{#e64173}{\tilde{x}_1},\,y)}{\mathop{\hat{\text{Var}}} \left( \color{#e64173}{\tilde{x}_1} \right)} $$
+---
+layout: true
+class: clear, middle
+
+&lt;img src="04-mcrlm_files/figure-html/venn_iv-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+layout: true
+# Regresión múltiple
+
+---
+## Ajuste del modelo
+
+Las medidas de *bondad de ajuste* intentan analizar qué tan bien nuestro modelo describe (*ajusta*) los datos.
+
+**Medida común:** `\(R^2\)` [R-cuadrado] (*también conocido como* coeficiente de determinación)
+
+$$ R^2 = \dfrac{\sum_i (\hat{y}_i - \overline{y})^2}{\sum_i \left( y_i - \overline{y} \right)^2} = 1 - \dfrac{\sum_i \left( y_i - \hat{y}_i \right)^2}{\sum_i \left( y_i - \overline{y} \right)^2} $$
+
+Nota nuestro viejo amigo la SSE: `\(\sum_i \left( y_i - \hat{y}_i \right)^2 = \sum_i e_i^2\)`.
+
+--
+
+`\(R^2\)` literalmente nos dice la proporción de la varianza en `\(y\)` que nuestro modelo actual explica. Por lo tanto `\(0 \leq R^2 \leq 1\)`.
+
+---
+
+**El problema:** A medida que agregamos variables a nuestro modelo, `\(R^2\)` aumenta *mecánicamente*.
+
+--
+
+Para ver este problema, podemos simular un conjunto de datos de 10,000 observaciones sobre `\(y\)` y 1,000 variables `\(x_k\)` aleatorias. **¡Sin relación entre `\(y\)` y las `\(x_k\)`!**. Esquema en pseudocódigo de la simulación:
+--
+
+.pseudocode-small[
+
+- Generar 10,000 observaciones de `\(y\)`
+- Generar 10,000 observaciones de las variables `\(x_1\)` hasta `\(x_{1000}\)`
+- Regresiones
+  - LM&lt;sub&gt;1&lt;/sub&gt;: Regresionar `\(y\)` sobre `\(x_1\)`; registrar R&lt;sup&gt;2&lt;/sup&gt;
+  - LM&lt;sub&gt;2&lt;/sub&gt;: Regresionar `\(y\)` sobre `\(x_1\)` y `\(x_2\)`; registrar R&lt;sup&gt;2&lt;/sup&gt;
+  - LM&lt;sub&gt;3&lt;/sub&gt;: Regresionar `\(y\)` sobre `\(x_1\)`, `\(x_2\)`, y `\(x_3\)`; registrar R&lt;sup&gt;2&lt;/sup&gt;
+  - ...
+  - LM&lt;sub&gt;1000&lt;/sub&gt;: Regresionar `\(y\)` sobre `\(x_1\)`, `\(x_2\)`, ..., `\(x_{1000}\)`; registrar R&lt;sup&gt;2&lt;/sup&gt;
+]
+
+---
+
+
+**El problema:** A medida que agregamos variables a nuestro modelo, `\(\color{#314f4f}{R^2}\)` aumenta *mecánicamente*.
+
+
+
+
+&lt;img src="04-mcrlm_files/figure-html/r2 plot-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+
+**Una solución:** `\(R^2\)` .pink[Ajustado] `\(\color{#e64173}{}\)`
+
+&lt;img src="04-mcrlm_files/figure-html/adjusted r2 plot-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+
+**El problema:** A medida que agregamos variables a nuestro modelo, `\(R^2\)` aumenta *mecánicamente*.
+
+**Una solución:** Penalizar por el número de variables, _por ejemplo_, el `\(R^2\)` ajustado:
+
+$$ \overline{R}^2 = 1 - \dfrac{\sum_i \left( y_i - \hat{y}_i \right)^2/(n-k-1)}{\sum_i \left( y_i - \overline{y} \right)^2/(n-1)} $$
+
+*Nota:* El `\(R^2\)` ajustado no necesariamente está entre 0 y 1.
+
+---
+
+**Disyuntivas (tradeoffs)**. Hay disyuntivas que recordar al agregar/quitar variables:
+
+**Menos variables**
+
+- Generalmente explican menos variación en `\(y\)`
+- Ofrecen interpretaciones y visualizaciones simples (*parsimonia*)
+- Puede que haya que preocuparse por el sesgo de variable omitida
+
+**Más variables**
+
+- Más probable encontrar relaciones *espurias* (estadísticamente significativas por azar—no reflejan una relación verdadera a nivel poblacional)
+- Más difícil interpretar el modelo
+- Aun así podrías omitir variables importantes—sigue existiendo el sesgo de variable omitida
+
+---
+layout: true
+# Sesgo de variable omitida
+---
+class: inverse, middle
+
+---
+
+Profundizaremos en este tema en unas semanas, pero intuitivamente:
+
+**El sesgo de variable omitida** (OVB, por sus siglas en inglés) surge cuando omitimos una variable que
+
+1. afecta nuestra variable de resultado `\(y\)`
+
+2. se correlaciona con una variable explicativa `\(x_j\)`
+
+Como su nombre lo indica, esta situación genera sesgo en nuestra estimación de `\(\beta_j\)`.
+
+--
+
+**Nota:** El OVB no es exclusivo de la regresión lineal múltiple, pero sí requiere que múltiples variables afecten a `\(y\)`.
+
+---
+
+**Ejemplo**
+
+Imaginemos un modelo simple para el monto que se le paga al individuo `\(i\)`
+
+$$ \text{Salario}_i = \beta_0 + \beta_1 \text{Escolaridad}_i + \beta_2 \text{Hombre}_i + u_i $$
+
+donde
+
+- `\(\text{Escolaridad}_i\)` da los años de educación de `\(i\)`
+- `\(\text{Hombre}_i\)` denota una variable indicadora de si el individuo `\(i\)` es hombre.
+
+por lo tanto
+
+- `\(\beta_1\)`: el retorno a un año adicional de escolaridad (*ceteris paribus*)
+- `\(\beta_2\)`: la prima por ser hombre (*ceteris paribus*)
+&lt;br&gt;Si `\(\beta_2 &gt; 0\)`, entonces hay discriminación contra las mujeres—reciben menos salario en función del género.
+
+---
+layout: true
+# Sesgo de variable omitida
+
+**Ejemplo, continuación**
+
+---
+
+De nuestro modelo poblacional
+
+$$ \text{Salario}_i = \beta_0 + \beta_1 \text{Escolaridad}_i + \beta_2 \text{Hombre}_i + u_i $$
+
+Si un estudio se enfoca en la relación entre el salario y la escolaridad, _es decir_,
+
+$$ \text{Salario}_i = \beta_0 + \beta_1 \text{Escolaridad}_i + \left(\beta_2 \text{Hombre}_i + u_i\right) $$
+$$ \text{Salario}_i = \beta_0 + \beta_1 \text{Escolaridad}_i + \varepsilon_i $$
+
+donde `\(\varepsilon_i = \beta_2 \text{Hombre}_i + u_i\)`.
+
+Usamos nuestro supuesto de exogeneidad para derivar la insesgadez de MCO. Pero aunque `\(\mathop{\boldsymbol{E}}\left[ u | X \right] = 0\)`, no es cierto que `\(\mathop{\boldsymbol{E}}\left[ \varepsilon | X \right] = 0\)` siempre que `\(\beta_2 \neq 0\)`.
+
+---
+
+Específicamente, `\(\mathop{\boldsymbol{E}}\left[ \varepsilon | \text{Hombre} = 1 \right] = \beta_2 + \mathop{\boldsymbol{E}}\left[ u | \text{Hombre} = 1 \right] \neq 0\)`.
+--
+ **Ahora MCO está sesgado.**
+
+--
+
+Intentemos ver este resultado gráficamente.
+
+
+
+El modelo poblacional:
+
+$$ \text{Salario}_i = 20 + 0.5 \times \text{Escolaridad}_i + 10 \times \text{Hombre}_i + u_i $$
+
+Nuestro modelo de regresión que sufre de sesgo de variable omitida:
+
+$$ \text{Salario}_i = \hat{\beta}_0 + \hat{\beta}_1 \times \text{Escolaridad}_i + e_i $$
+
+Finalmente, imaginemos que las mujeres, en promedio, reciben más escolaridad que los hombres.
+
+---
+layout: true
+# Sesgo de variable omitida
+**Ejemplo, continuación:** `\(\text{Salario}_i = 20 + 0.5 \times \text{Escolaridad}_i + 10 \times \text{Hombre}_i + u_i\)`
+
+---
+
+La relación entre salario y escolaridad.
+
+&lt;img src="04-mcrlm_files/figure-html/plot ovb 1-1.svg" style="display: block; margin: auto;" /&gt;
+---
+count: false
+Estimación de regresión sesgada: `\(\widehat{\text{Salario}}_i = 31.3 + -0.9 \times \text{Escolaridad}_i\)`
+
+&lt;img src="04-mcrlm_files/figure-html/plot ovb 2-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+count: false
+Recordando la variable omitida: Género (**&lt;font color="#e64173"&gt;mujer&lt;/font&gt;** y **&lt;font color="#314f4f"&gt;hombre&lt;/font&gt;**)
+
+&lt;img src="04-mcrlm_files/figure-html/plot ovb 3-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+count: false
+Recordando la variable omitida: Género (**&lt;font color="#e64173"&gt;mujer&lt;/font&gt;** y **&lt;font color="#314f4f"&gt;hombre&lt;/font&gt;**)
+
+&lt;img src="04-mcrlm_files/figure-html/plot ovb 4-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+count: false
+Estimación de regresión insesgada: `\(\widehat{\text{Salario}}_i = 20.9 + 0.4 \times \text{Escolaridad}_i + 9.1 \times \text{Hombre}_i\)`
+
+&lt;img src="04-mcrlm_files/figure-html/plot ovb 5-1.svg" style="display: block; margin: auto;" /&gt;
+---
+layout: false
+class: clear, middle, center
+
+&lt;img src="04-mcrlm_files/figure-html/venn2-1.svg" style="display: block; margin: auto;" /&gt;
+---
+layout: false
+
+# Sesgo de variable omitida
+
+## Soluciones
+
+1. No omitir variables
+
+2. Variables instrumentales y mínimos cuadrados en dos etapas&lt;sup&gt;†&lt;/sup&gt;
+
+**Advertencia:** Hay situaciones en las que ninguna solución es posible.
+
+--
+
+1. Proceder con cautela (a veces puedes determinar el signo del sesgo).
+
+2. Tal vez simplemente detenerse.
+
+.footnote[
+[†]: Un curso de econometría II.
+]
+
+---
+layout: true
+# Interpretando coeficientes
+
+---
+class: inverse, middle
+
+---
+## Variables continuas
+
+Considera la relación
+
+$$ \text{Salario}_i = \beta_0 + \beta_1 \, \text{Escolaridad}_i + u_i $$
+
+donde
+
+- `\(\text{Salario}_i\)` es una variable continua que mide el salario de un individuo
+- `\(\text{Escolaridad}_i\)` es una variable continua que mide los años de educación
+
+--
+
+**Interpretaciones**
+
+- `\(\beta_0\)`: el intercepto en `\(y\)`, _es decir_, el `\(\text{Salario}\)` cuando `\(\text{Escolaridad} = 0\)`
+- `\(\beta_1\)`: el aumento esperado en el `\(\text{Salario}\)` por un aumento de una unidad en `\(\text{Escolaridad}\)`
+
+---
+## Variables continuas
+
+Derivando la interpretación de la pendiente:
+
+$$
+`\begin{aligned}
+  \mathop{\boldsymbol{E}}\left[ \text{Salario} | \text{Escolaridad} = \ell + 1 \right] - \mathop{\boldsymbol{E}}\left[ \text{Salario} | \text{Escolaridad} = \ell \right] &amp;= \\[0.5em]
+  \mathop{\boldsymbol{E}}\left[ \beta_0 + \beta_1 (\ell + 1) + u \right] - \mathop{\boldsymbol{E}}\left[ \beta_0 + \beta_1 \ell + u \right] &amp;= \\[0.5em]
+  \left[ \beta_0 + \beta_1 (\ell + 1) \right] - \left[ \beta_0 + \beta_1 \ell \right] &amp;= \\[0.5em]
+  \beta_0 - \beta_0 + \beta_1 \ell - \beta_1 \ell + \beta_1 &amp;=
+  \beta_1
+\end{aligned}`
+$$
+
+--
+
+_Es decir_, la pendiente da el aumento esperado en nuestra variable de resultado por un aumento de una unidad en la variable explicativa.
+
+---
+## Variables continuas
+
+Si tenemos múltiples variables explicativas, _por ejemplo_,
+
+$$ \text{Salario}_i = \beta_0 + \beta_1 \, \text{Escolaridad}_i + \beta_2 \, \text{Habilidad}_i + u_i $$
+
+entonces la interpretación cambia ligeramente.
+--
+
+$$
+`\begin{aligned}
+  \mathop{\boldsymbol{E}}\left[ \text{Salario} | \text{Escolaridad} = \ell + 1 \land \text{Habilidad} = \alpha \right] - &amp; \\
+    \mathop{\boldsymbol{E}}\left[ \text{Salario} | \text{Escolaridad} = \ell \land \text{Habilidad} = \alpha \right] &amp;= \\
+  \mathop{\boldsymbol{E}}\left[ \beta_0 + \beta_1 (\ell + 1) + \beta_2 \alpha + u \right] -
+    \mathop{\boldsymbol{E}}\left[ \beta_0 + \beta_1 \ell + \beta_2 \alpha + u \right] &amp;= \\
+  \left[ \beta_0 + \beta_1 (\ell + 1) + \beta_2 \alpha \right] -
+    \left[ \beta_0 + \beta_1 \ell + \beta_2 \alpha \right] &amp;= \\
+  \beta_0 - \beta_0 + \beta_1 \ell - \beta_1 \ell + \beta_1 + \beta_2 \alpha - \beta_2 \alpha &amp;=
+  \beta_1
+\end{aligned}`
+$$
+
+--
+
+_Es decir_, la pendiente da el aumento esperado en nuestra variable de resultado por un aumento de una unidad en la variable explicativa, **manteniendo todas las demás variables constantes** (*ceteris paribus*).
+
+---
+## Variables continuas
+
+Derivación alternativa
+
+Considera el modelo
+
+$$ y = \beta_0 + \beta_1 \, x + u $$
+
+Diferencia el modelo:
+
+$$ \dfrac{dy}{dx} = \beta_1 $$
+
+
+---
+## Variables categóricas
+
+Considera la relación
+
+$$ \text{Salario}_i = \beta_0 + \beta_1 \, \text{Mujer}_i + u_i $$
+
+donde
+
+- `\(\text{Salario}_i\)` es una variable continua que mide el salario de un individuo
+- `\(\text{Mujer}_i\)` es una variable binaria/indicadora que toma el valor `\(1\)` cuando `\(i\)` es mujer
+
+--
+
+**Interpretaciones**
+
+- `\(\beta_0\)`: el `\(\text{Salario}\)` esperado para los hombres (_es decir_, cuando `\(\text{Mujer} = 0\)`)
+- `\(\beta_1\)`: la diferencia esperada en el `\(\text{Salario}\)` entre mujeres y hombres
+- `\(\beta_0 + \beta_1\)`: el `\(\text{Salario}\)` esperado para las mujeres
+
+---
+
+## Variables categóricas
+
+Derivaciones
+
+$$
+`\begin{aligned}
+ \mathop{\boldsymbol{E}}\left[ \text{Salario} | \text{Hombre} \right] &amp;=
+ \mathop{\boldsymbol{E}}\left[ \beta_0 + \beta_1\times 0 + u_i \right] \\
+ &amp;= \mathop{\boldsymbol{E}}\left[ \beta_0 + 0 + u_i \right] \\
+ &amp;= \beta_0
+\end{aligned}`
+$$
+
+--
+
+$$
+`\begin{aligned}
+ \mathop{\boldsymbol{E}}\left[ \text{Salario} | \text{Mujer} \right] &amp;=
+ \mathop{\boldsymbol{E}}\left[ \beta_0 + \beta_1\times 1 + u_i \right] \\
+ &amp;= \mathop{\boldsymbol{E}}\left[ \beta_0 + \beta_1 + u_i \right] \\
+ &amp;= \beta_0 + \beta_1
+\end{aligned}`
+$$
+
+--
+
+**Nota:** Si no hay otras variables para condicionar, entonces `\(\hat{\beta}_1\)` es igual a la diferencia de medias entre grupos, _por ejemplo_, `\(\overline{x}_\text{Mujer} - \overline{x}_\text{Hombre}\)`.
+
+--
+
+**Nota&lt;sub&gt;2&lt;/sub&gt;:** La interpretación de *mantener todas las demás variables constantes* también aplica para variables categóricas en contextos de regresión múltiple.
+
+---
+## Variables categóricas
+
+`\(y_i = \beta_0 + \beta_1 x_i + u_i\)` para la variable binaria `\(x_i = \{\color{#314f4f}{0}, \, \color{#e64173}{1}\}\)`
+
+
+
+&lt;img src="04-mcrlm_files/figure-html/dat plot 1-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+## Variables categóricas
+
+`\(y_i = \beta_0 + \beta_1 x_i + u_i\)` para la variable binaria `\(x_i = \{\color{#314f4f}{0}, \, \color{#e64173}{1}\}\)`
+
+&lt;img src="04-mcrlm_files/figure-html/dat plot 2-1.svg" style="display: block; margin: auto;" /&gt;
+---
+## Interacciones
+
+Las interacciones permiten que el efecto de una variable cambie según el nivel de otra variable.
+
+**Ejemplos**
+
+1. ¿Cambia el efecto de la escolaridad sobre el salario según el género?
+
+1. ¿Cambia el efecto del género sobre el salario según la raza?
+
+1. ¿Cambia el efecto de la escolaridad sobre el salario según la experiencia?
+
+---
+## Interacciones
+
+Anteriormente, consideramos un modelo que permitía que mujeres y hombres tuvieran salarios distintos, pero el modelo asumía que el efecto de la escolaridad sobre el salario era el mismo para todos:
+
+$$ \text{Salario}_i = \beta_0 + \beta_1 \, \text{Escolaridad}_i + \beta_2 \, \text{Mujer}_i + u_i $$
+
+pero también podemos permitir que el efecto de la escolaridad varíe según el género:
+
+$$ \text{Salario}_i = \beta_0 + \beta_1 \, \text{Escolaridad}_i + \beta_2 \, \text{Mujer}_i + \beta_3 \, \text{Escolaridad}_i\times\text{Mujer}_i + u_i $$
+
+---
+## Interacciones
+
+El modelo donde la escolaridad tiene el mismo efecto para todos (**&lt;font color="#e64173"&gt;M&lt;/font&gt;** y **&lt;font color="#314f4f"&gt;H&lt;/font&gt;**):
+
+
+
+&lt;img src="04-mcrlm_files/figure-html/int plot 1-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+## Interacciones
+
+El modelo donde el efecto de la escolaridad puede diferir según el género (**&lt;font color="#e64173"&gt;M&lt;/font&gt;** y **&lt;font color="#314f4f"&gt;H&lt;/font&gt;**):
+
+&lt;img src="04-mcrlm_files/figure-html/int plot 2-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+## Interacciones
+
+Interpretar coeficientes puede ser un poco complicado con interacciones, pero la clave&lt;sup&gt;.pink[†]&lt;/sup&gt; es trabajar cuidadosamente el álgebra.
+
+.footnote[.pink[†] Como suele suceder en econometría.]
+
+$$ \text{Salario}_i = \beta_0 + \beta_1 \, \text{Escolaridad}_i + \beta_2 \, \text{Mujer}_i + \beta_3 \, \text{Escolaridad}_i\times\text{Mujer}_i + u_i $$
+
+Retorno esperado de un año adicional de escolaridad para las mujeres:
+
+$$
+`\begin{aligned}
+ \mathop{\boldsymbol{E}}\left[ \text{Salario}_i | \text{Mujer} \land \text{Escolaridad} = \ell + 1 \right] \\ -
+    \mathop{\boldsymbol{E}}\left[ \text{Salario}_i | \text{Mujer} \land \text{Escolaridad} = \ell \right] &amp;= \\
+ \mathop{\boldsymbol{E}}\left[ \beta_0 + \beta_1 (\ell+1) + \beta_2 + \beta_3 (\ell + 1) + u_i \right] -
+    \mathop{\boldsymbol{E}}\left[ \beta_0 + \beta_1 \ell + \beta_2 + \beta_3 \ell + u_i  \right] &amp;= \\
+ \beta_1 + \beta_3
+\end{aligned}`
+$$
+
+--
+
+El `\(\beta_1\)` da el retorno esperado de un año adicional de escolaridad para los hombres. Por lo tanto, `\(\beta_3\)` da la **diferencia en los retornos a la escolaridad** entre **&lt;font color="#e64173"&gt;M&lt;/font&gt;** y **&lt;font color="#314f4f"&gt;H&lt;/font&gt;**.
+
+---
+## Especificación log-lineal
+
+En economía, se verá frecuentemente variables de resultado en logaritmos con variables explicativas lineales (sin logaritmo), _por ejemplo_,
+
+$$ \log(\text{Salario}_i) = \beta_0 + \beta_1 \, \text{Escolaridad}_i + u_i $$
+
+Esta especificación cambia nuestra interpretación de los coeficientes de pendiente.
+
+**Interpretación**
+
+- Un aumento de una unidad en nuestra variable explicativa aumenta la variable de resultado en aproximadamente `\(\beta_1\times 100\)` por ciento.
+
+- *Ejemplo:* Un año adicional de escolaridad aumenta el salario en aproximadamente 3 por ciento (para `\(\beta_1 = 0.03\)`).
+
+
+---
+## Especificación log-lineal
+
+Debido a que la especificación log-lineal viene con una interpretación diferente, necesitas asegurarte de que se ajuste a tu proceso generador de datos/modelo.
+
+¿Si `\(x\)` cambia a `\(y\)` en niveles (_por ejemplo_, un aumento de 3 unidades) o en porcentajes (_por ejemplo_, un aumento del 10 por ciento)?
+
+--
+
+_Es decir_, necesitas asegurarte de que una relación exponencial tenga sentido:
+
+$$ \log(y_i) = \beta_0 + \beta_1 \, x_i + u_i \iff y_i = e^{\beta_0 + \beta_1 x_i + u_i} $$
+
+---
+## Especificación log-lineal
+
+&lt;img src="04-mcrlm_files/figure-html/log linear plot-1.svg" style="display: block; margin: auto;" /&gt;
+
+
+---
+## Especificación log-log
+
+De forma similar, los econometristas suelen usar modelos log-log, en los que la variable de resultado está en logaritmo *y* al menos una variable explicativa también
+
+$$ \log(\text{Salario}_i) = \beta_0 + \beta_1 \, \log(\text{Escolaridad}_i) + u_i $$
+
+**Interpretación:**
+
+- Un aumento de un uno por ciento en `\(x\)` generará un cambio de `\(\beta_1\)` por ciento en `\(y\)`.
+- Frecuentemente se interpreta como una elasticidad.
+
+
+---
+## Log-lineal con una variable binaria
+
+**Nota:** Si tienes un modelo log-lineal con una variable indicadora binaria, la interpretación del coeficiente de esa variable cambia.
+
+Considera
+
+$$ \log(y_i) = \beta_0 + \beta_1 x_1 + u_i $$
+
+para la variable binaria `\(x_1\)`.
+
+La interpretación de `\(\beta_1\)` ahora es
+
+- Cuando `\(x_1\)` cambia de 0 a 1, `\(y\)` cambiará en `\(100 \times \left( e^{\beta_1} -1 \right)\)` por ciento.
+- Cuando `\(x_1\)` cambia de 1 a 0, `\(y\)` cambiará en `\(100 \times \left( e^{-\beta_1} -1 \right)\)` por ciento.
+
+
+---
+## Especificación log-log
+
+&lt;img src="04-mcrlm_files/figure-html/log log plot-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+layout: true
+# Temas adicionales
+
+---
+class: inverse, middle
+
+---
+**MCRLM: enfoque matricial**
+
+El Modelo Clásico de Regresión Lineal Múltiple (MCRLM) en forma matricial es:
+
+`$$Y = X\beta + U$$`
+
+donde `\(Y\)` es el vector `\(n \times 1\)` de la variable dependiente, `\(X\)` la matriz `\(n \times k\)` de regresores (incluye una columna de unos para el intercepto), `\(\beta\)` el vector `\(k \times 1\)` de parámetros y `\(U\)` el vector `\(n \times 1\)` de perturbaciones.
+
+**Estimador de mínimos cuadrados ordinarios (MCO)**
+
+**Suma de cuadrados de los residuos**. Despejando el error, `\(U = Y - X\hat\beta\)`, y la suma de cuadrados de los residuos es:
+
+`$$\sum u_i^2 = U^{t}U = (Y - X\hat\beta)^{t}(Y - X\hat\beta)$$`
+
+
+---
+
+**Demostración**.Partimos del modelo y despejamos el vector de errores:
+
+`$$Y = X\beta + U \quad\Rightarrow\quad U = Y - X\hat{\beta}$$`
+
+La suma de cuadrados de los residuos es:
+
+`$$\sum u_i^2 = U^{t}U = (Y - X\hat{\beta})^{t}(Y - X\hat{\beta})$$`
+
+Usando la propiedad de la transpuesta `\((AB)^t = B^tA^t\)`:
+
+$$ U^{t}U = (Y^{t} - \hat\beta^{t}X^{t})(Y - X\hat\beta) $$
+
+
+
+$$ U^{t}U = Y^{t}Y - Y^{t}X\hat\beta - \hat\beta^{t}X^{t}Y + \hat\beta^{t}X^{t}X\hat\beta $$
+
+Como `\(Y^{t}X\hat\beta\)` es un escalar, es igual a su transpuesta `\(\hat\beta^{t}X^{t}Y\)`:
+
+$$ U^{t}U = Y^{t}Y - 2\hat\beta^{t}X^{t}Y + \hat\beta^{t}X^{t}X\hat\beta $$
+
+---
+
+**Condición de primer orden**
+
+Derivando respecto de `\(\hat\beta\)` e igualando a cero:
+
+$$ \frac{\partial\, U^{t}U}{\partial \hat\beta} = -2X^{t}Y + 2X^{t}X\hat\beta = 0 $$
+
+$$ 2X^{t}Y = 2X^{t}X\hat\beta \quad\Rightarrow\quad X^{t}Y = X^{t}X\hat\beta $$
+
+Premultiplicando por `\((X^tX)^{-1}\)` y usando `\(A^{-1}A = I\)`:
+
+$$ (X^{t}X)^{-1}X^{t}Y = (X^{t}X)^{-1}X^{t}X\hat\beta $$
+
+$$ \boxed{\hat\beta = (X^{t}X)^{-1}X^{t}Y} $$
+
+---
+
+**Matriz de varianzas y covarianzas**
+
+Por lo tanto, la matriz de varianzas y covarianzas del estimador es:
+
+$$ V(\hat\beta) = \sigma_u^{2}\,(X^{t}X)^{-1} $$
+
+Como `\(\sigma_u^2\)` es desconocida, se estima con:
+
+$$ \hat\sigma_u^{2} = \frac{U^{t}U}{n-k} = \frac{SRC}{n-k} $$
+
+---
+
+**Sumas de cuadrados**
+
+Así también se definen:
+
+$$ STC = Y^{t}Y - n\bar{Y}^{2} \qquad\text{(suma total de cuadrados)} $$
+
+$$ SEC = \hat\beta^{t}X^{t}Y - n\bar{Y}^{2} \qquad\text{(suma explicada de cuadrados)} $$
+
+$$ SRC = Y^{t}Y - \hat\beta^{t}X^{t}Y \qquad\text{(suma residual de cuadrados)} $$
+
+Se cumple la descomposición `\(STC = SEC + SRC\)`, y de ella el coeficiente de determinación:
+
+$$ R^2 = \frac{SEC}{STC} = 1 - \frac{SRC}{STC} $$
+
+---
+
+**Aplicación en R**. A continuación se calculan todas las expresiones anteriores con datos simulados y se comparan con `lm()`.
+
+**Datos**
+
+
+``` r
+set.seed(123); n  &lt;- 60; x1 &lt;- rnorm(n, 10, 2); x2 &lt;- rnorm(n, 5, 1); y  &lt;- 4 + 1.2 * x1 - 0.8 * x2 + rnorm(n)
+X &lt;- cbind(Intercepto = 1, x1 = x1, x2 = x2); Y &lt;- matrix(y, ncol = 1); k &lt;- ncol(X)
+dim(X)
+```
+
+```
+#&gt; [1] 60  3
+```
+
+``` r
+head(X)
+```
+
+```
+#&gt;      Intercepto        x1       x2
+#&gt; [1,]          1  8.879049 5.379639
+#&gt; [2,]          1  9.539645 4.497677
+#&gt; [3,]          1 13.117417 4.666793
+#&gt; [4,]          1 10.141017 3.981425
+#&gt; [5,]          1 10.258575 3.928209
+#&gt; [6,]          1 13.430130 5.303529
+```
+
+---
+
+**Estimador MCO**
+
+
+``` r
+XtX &lt;- t(X) %*% X
+XtY &lt;- t(X) %*% Y
+
+B &lt;- solve(XtX) %*% XtY       # B = (X'X)^-1 X'Y
+B
+```
+
+```
+#&gt;                  [,1]
+#&gt; Intercepto  3.2842159
+#&gt; x1          1.3226542
+#&gt; x2         -0.9091152
+```
+
+---
+
+**Sumas de cuadrados y `\(R^2\)`**
+
+
+``` r
+ybar &lt;- mean(Y)
+
+STC &lt;- as.numeric(t(Y) %*% Y - n * ybar^2)
+SEC &lt;- as.numeric(t(B) %*% XtY - n * ybar^2)
+SRC &lt;- as.numeric(t(Y) %*% Y - t(B) %*% XtY)
+
+data.frame(
+  medida = c("STC", "SEC", "SRC", "SEC + SRC", "R^2"),
+  valor  = c(STC, SEC, SRC, SEC + SRC, SEC / STC)
+)
+```
+
+```
+#&gt;      medida       valor
+#&gt; 1       STC 417.1060039
+#&gt; 2       SEC 354.6426142
+#&gt; 3       SRC  62.4633898
+#&gt; 4 SEC + SRC 417.1060039
+#&gt; 5       R^2   0.8502458
+```
+
+---
+
+### Matriz de varianzas y covarianzas
+
+
+``` r
+sigma2 &lt;- SRC / (n - k)
+VB &lt;- sigma2 * solve(XtX)     # V(B) = sigma^2 (X'X)^-1
+VB
+```
+
+```
+#&gt;             Intercepto           x1           x2
+#&gt; Intercepto  1.06359145 -0.050976792 -0.106513829
+#&gt; x1         -0.05097679  0.005673871 -0.001310408
+#&gt; x2         -0.10651383 -0.001310408  0.024125574
+```
+
+``` r
+ee &lt;- sqrt(diag(VB))          # errores estándar
+ee
+```
+
+```
+#&gt; Intercepto         x1         x2 
+#&gt;  1.0313057  0.0753251  0.1553241
+```
+
+---
+
+### Comparación con `lm()`
+
+
+``` r
+mod &lt;- lm(y ~ x1 + x2)
+
+comparacion &lt;- data.frame(
+  matricial = as.numeric(B),
+  lm        = unname(coef(mod)),
+  ee_matricial = ee,
+  ee_lm        = unname(summary(mod)$coefficients[, "Std. Error"]),
+  row.names = colnames(X)
+)
+comparacion
+```
+
+```
+#&gt;             matricial         lm ee_matricial     ee_lm
+#&gt; Intercepto  3.2842159  3.2842159    1.0313057 1.0313057
+#&gt; x1          1.3226542  1.3226542    0.0753251 0.0753251
+#&gt; x2         -0.9091152 -0.9091152    0.1553241 0.1553241
+```
+
+---
+
+
+``` r
+summary(mod)
+```
+
+```
+#&gt; 
+#&gt; Call:
+#&gt; lm(formula = y ~ x1 + x2)
+#&gt; 
+#&gt; Residuals:
+#&gt;      Min       1Q   Median       3Q      Max 
+#&gt; -1.95715 -0.80526  0.02068  0.68858  2.70587 
+#&gt; 
+#&gt; Coefficients:
+#&gt;             Estimate Std. Error t value Pr(&gt;|t|)    
+#&gt; (Intercept)  3.28422    1.03131   3.185  0.00235 ** 
+#&gt; x1           1.32265    0.07533  17.559  &lt; 2e-16 ***
+#&gt; x2          -0.90912    0.15532  -5.853  2.5e-07 ***
+#&gt; ---
+#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+#&gt; 
+#&gt; Residual standard error: 1.047 on 57 degrees of freedom
+#&gt; Multiple R-squared:  0.8502,	Adjusted R-squared:  0.845 
+#&gt; F-statistic: 161.8 on 2 and 57 DF,  p-value: &lt; 2.2e-16
+```
+
+---
+## Inferencia *vs.* predicción
+
+Hasta ahora, nos hemos enfocado principalmente en la **inferencia estadística**—usando estimadores y las propiedades de sus distribuciones para intentar aprender sobre los parámetros poblacionales subyacentes, desconocidos.
+
+$$ y\_i = \color{#e64173}{\hat{\beta}\_{0}} + \color{#e64173}{\hat{\beta\_1}} \, x\_{1i} + \color{#e64173}{\hat{\beta\_2}} \, x\_{2i} + \cdots + \color{#e64173}{\hat{\beta}\_{k}} \, x\_{ki} + e\_i $$
+
+--
+
+La **predicción** incluye un conjunto de temas/herramientas bastante distinto dentro de la econometría (y la ciencia de datos/aprendizaje automático)—crear modelos que estimen con precisión observaciones individuales.
+
+$$ \color{#e64173}{\hat{y}\_i} = \mathop{\hat{f}}\left( x_1,\, x_2,\, \ldots x_k \right) $$
+
+---
+## Inferencia *vs.* predicción
+
+En resumen
+
+- **Inferencia:** causalidad, `\(\hat{\beta}_k\)` (consistente y eficiente), errores estándar/pruebas de hipótesis para `\(\hat{\beta}_k\)`, generalmente MCO
+
+- **Predicción:**&lt;sup&gt;.pink[†]&lt;/sup&gt; correlación, `\(\hat{y}_i\)` (bajo error), selección de modelos, los modelos no lineales son mucho más comunes
+
+.footnote[
+.pink[†] Incluye el pronóstico (forecasting).
+]
+
+---
+## Efectos de tratamiento y causalidad
+
+Gran parte de la (micro)econometría moderna se enfoca en estimar causalmente (*identificar*) el efecto de programas/políticas, _por ejemplo_,
+
+- [El salario mínimo](https://www.jstor.org/stable/2118030)
+- [La legalización del cannabis recreativo](https://pages.uoregon.edu/bchansen/working.html)
+- [Prohibiciones sobre el historial salarial](http://www.drewmcnichols.com/research)
+- [Preescolar](https://amstat.tandfonline.com/doi/abs/10.1198/016214508000000841#.XD4PVy2ZNO4)
+
+
+--
+
+En esta literatura, el programa suele ser una variable binaria, y le damos mucha importancia a encontrar una estimación insesgada del efecto del programa, `\(\hat{\tau}\)`.
+
+$$ \text{Resultado}_i = \beta_0 + \tau \, \text{Programa}_i + u_i $$
+
+---
+## Transformaciones
+
+Nuestro supuesto de linealidad requiere que
+
+1. los **parámetros entren linealmente** (_es decir_, los `\(\beta_k\)` multiplicados por variables)
+2. las perturbaciones `\(u_i\)` **entren de forma aditiva**
+
+Permitimos relaciones no lineales entre `\(y\)` y las variables explicativas.
+
+--
+
+**Ejemplos**
+
+- **Polinomios** e **interacciones:** `\(y_i = \beta_0 + \beta_1 x_1 + \beta_2 x_1^2 + \beta_3 x_2 + \beta_4 x_2^2 + \beta_5 \left( x_1 x_2 \right) + u_i\)`
+
+- **Exponenciales** y **logaritmos:** `\(\log(y_i) = \beta_0 + \beta_1 x_1 + \beta_2 e^{x_2} + u_i\)`
+
+- **Indicadoras** y **umbrales:** `\(y_i = \beta_0 + \beta_1 x_1 + \beta_2 \, \mathbb{I}(x_1 \geq 100) + u_i\)`
+
+---
+
+**Desafío de transformación:** posibilidades (literalmente) infinitas. ¿Cuál elegimos?
+
+&lt;img src="04-mcrlm_files/figure-html/trans figure start-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+
+`\(y_i = \beta_0 + u_i\)`
+
+&lt;img src="04-mcrlm_files/figure-html/trans figure 0-1.svg" style="display: block; margin: auto;" /&gt;
+---
+count: false
+
+`\(y_i = \beta_0 + \beta_1 x + u_i\)`
+
+&lt;img src="04-mcrlm_files/figure-html/trans figure 1-1.svg" style="display: block; margin: auto;" /&gt;
+---
+count: false
+
+`\(y_i = \beta_0 + \beta_1 x + \beta_2 x^2 + u_i\)`
+
+&lt;img src="04-mcrlm_files/figure-html/trans figure 2-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+count: false
+
+`\(y_i = \beta_0 + \beta_1 x + \beta_2 x^2 + \beta_3 x^3 + u_i\)`
+
+&lt;img src="04-mcrlm_files/figure-html/trans figure 3-1.svg" style="display: block; margin: auto;" /&gt;
+---
+count: false
+
+`\(y_i = \beta_0 + \beta_1 x + \beta_2 x^2 + \beta_3 x^3 + \beta_4 x^4 + u_i\)`
+
+&lt;img src="04-mcrlm_files/figure-html/trans figure 4-1.svg" style="display: block; margin: auto;" /&gt;
+---
+count: false
+
+`\(y_i = \beta_0 + \beta_1 x + \beta_2 x^2 + \beta_3 x^3 + \beta_4 x^4 + \beta_5 x^5 + u_i\)`
+
+&lt;img src="04-mcrlm_files/figure-html/trans figure 5-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+count: false
+
+**La verdad:** `\(y_i = 2 e^{x} + u_i\)`
+
+&lt;img src="04-mcrlm_files/figure-html/trans figure 6-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+## Valores atípicos (outliers)
+
+Debido a que MCO minimiza la suma de los errores **al cuadrado**, los valores atípicos pueden influir mucho en nuestras estimaciones.
+
+**Respuestas comunes**
+
+- Remover los valores atípicos del conjunto de datos
+
+- Reemplazar los valores atípicos con el percentil 99&lt;sup&gt;o&lt;/sup&gt; de su variable (*winsorizar*)
+
+- Tomar el logaritmo de la variable para "resolver" los valores atípicos
+
+- No hacer nada. Los valores atípicos no siempre son malos. Algunas personas están "lejos" del promedio. Puede que no tenga sentido intentar cambiar esta variación.
+
+---
+## Datos faltantes
+
+De forma similar, los datos faltantes pueden afectar tus resultados.
+
+.mono[R] no sabe cómo lidiar con una observación faltante.
+
+``` r
+1 + 2 + 3 + NA + 5
+```
+
+```
+#&gt; [1] NA
+```
+
+Si corres una regresión&lt;sup&gt;†&lt;/sup&gt; con valores faltantes, .mono[R] descarta las observaciones a las que les faltan esos valores.
+
+Si las observaciones faltan de forma no aleatoria, una muestra aleatoria puede terminar siendo no aleatoria.
+
+.footnote[
+[†]: O al realizar casi cualquier operación/función
+]
+
+---
+exclude: true
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
